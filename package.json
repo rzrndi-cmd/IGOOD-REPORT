@@ -1,0 +1,22 @@
+{
+  "name": "igood-report",
+  "version": "1.0.0",
+  "description": "Igood Daily Financial Report & Inventory Management App",
+  "main": "index.html",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node dev-server.mjs",
+    "hot": "node dev-server.mjs",
+    "build:android": "node scripts/copy-assets.mjs",
+    "test:logic": "node tests/penjualan-report-harian.test.mjs && node tests/supabase-sync.test.mjs"
+  },
+  "keywords": [],
+  "author": "Igood",
+  "license": "MIT",
+  "devDependencies": {
+    "playwright": "^1.60.0"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}

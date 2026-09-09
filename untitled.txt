@@ -1,0 +1,192 @@
+/**
+ * IGOOD REPORT - Transaction-first cashier logic
+ * Local-first storage for stock, sales transactions, daily WA reports, and dashboard.
+            const acc = accs.find(a => a.code === code);
+            if (!acc) return;
+            acc.qty = Math.max(0, (Number(acc.qty) || 0) + (direction * qtyByCode[code]));
+            acc.updatedAt = new Date().toISOString();
+            queueRecordSupabaseSync('accessories', acc);
+        });
+        save(DB_KEYS.accessories, accs);
+    }
+            }
+        }
+        // If preorder has a linked unit code, check if it's available and compatible with parsed specs
+        if (preorder.linkedUnitCode) {
+            const linkedDevice = devices.find(d => d.code === preorder.linkedUnitCode);
+            if (linkedDevice) {
+                const deviceModel = cleanStr(linkedDevice.model);
+                const deviceStorage = cleanStr(linkedDevice.storage);
+                const targetModel = cleanStr(preModel);
+                const targetStorage = cleanStr(preStorage);
+                
+                const modelOk = !targetModel || deviceModel === targetModel;
+                const storageOk = !targetStorage || deviceStorage === targetStorage;
+                
+                if (modelOk && storageOk) {
+                    return linkedDevice;
+                }
+            }
+        }
+        // 1. Try exact match (brand, model, storage, color, condition)
+        let match = devices.find(d => 
+            brandMatch(preBrand, d.brand) &&
+        if (!preorder) return;
+        preorder.status = 'Ready';
+        preorder.doneDate = '';
+        preorder.linkedUnitCode = '';
+        preorder.linkedTransactionId = '';
+        preorder.updatedAt = new Date().toISOString();
+        savePreorders(preorders);
+                unit.status = 'Available';
+                delete unit.soldDate;
+                delete unit.soldPrice;
+                unit.updatedAt = new Date().toISOString();
+                save(DB_KEYS.devices, devices);
+                queueRecordSupabaseSync('devices', unit);
+            } else {
+                save(DB_KEYS.devices, devices);
+            }
+            save(DB_KEYS.devices, devices);
+            adjustBonusAccessoryStock(tx.bonusAccessories, 1);
+            if (tx.preorderCode) markPreorderReadyAgain(tx.preorderCode);
+        }
+        if (tx.category === 'tukar_tambah') {
+            const devices = load(DB_KEYS.devices);
+            const unit = devices.find(d => d.code === tx.stockRefCode);
+            if (unit) {
+                unit.status = 'Available';
+                delete unit.soldDate;
+                delete unit.soldPrice;
+                unit.updatedAt = new Date().toISOString();
+                queueRecordSupabaseSync('devices', unit);
+            }
+            const filteredDevices = devices.filter(d => d.code !== tx.tradeInCode);
+            save(DB_KEYS.devices, filteredDevices);
+        if (tx.category === 'accessory') {
+            const accs = load(DB_KEYS.accessories);
+            const acc = accs.find(a => a.code === tx.stockRefCode);
+            if (acc) acc.qty = (Number(acc.qty) || 0) + (Number(tx.quantity) || 0);
+            save(DB_KEYS.accessories, accs);
+            if (acc) {
+                acc.qty = (Number(acc.qty) || 0) + (Number(tx.quantity) || 0);
+                acc.updatedAt = new Date().toISOString();
+                save(DB_KEYS.accessories, accs);
+                queueRecordSupabaseSync('accessories', acc);
+            }
+        }
+        
+        // Revert preorder back to Ready for any sale transaction that was linked to a preorder
+        if (tx.preorderCode && tx.category !== 'preorder_dp') {
+            markPreorderReadyAgain(tx.preorderCode);
+        }
+    }
+    window.printTransactionReceiptFromHistory = function (id) {
+        if (!confirm('Hapus transaksi dan kembalikan stok?')) return;
+        const transactions = loadTransactions();
+        const tx = transactions.find(item => item.id === id);
+        if (tx) revertTransactionStock(tx);
+        if (tx) {
+            revertTransactionStock(tx);
+            if (getSupabaseConfig().enabled) {
+                deleteRecordFromSupabase('transactions', 'id', tx.id).catch(() => {});
+            }
+        }
+        saveTransactions(transactions.filter(item => item.id !== id));
+        renderDailyReport();
+        renderActiveSaleForm();
+    init();
+})();
+import {
+  assert,
+  closeIgoodPage,
+  });
+}
+async function testVoidPreorderReadySaleRestoresPreorderStatusAndStock() {
+  await withIgoodPage(async (page) => {
+    await seedLocalStorage(page, {
+      igood_preorder_requests: [{
+        code: 'PO-0001',
+        date: '2026-06-18',
+        buyerName: 'Budi',
+        buyerWa: '08123456789',
+        requestedItem: 'iPhone 13 128GB Midnight',
+        brand: 'Apple',
+        model: 'iPhone 13',
+        storage: '128GB',
+        color: 'Midnight',
+        dpAmount: 1000000,
+        cost: 5200000,
+        status: 'Ready',
+        linkedUnitCode: 'IP-R1M-01',
+        createdAt: '2026-06-18T00:00:00Z',
+      }],
+      igood_device_stock: [{
+        code: 'IP-R1M-01',
+        category: 'iphone',
+        brand: 'Apple',
+        model: 'iPhone 13',
+        storage: '128GB',
+        color: 'Midnight',
+        condition: 'Bekas',
+        cost: 5200000,
+        status: 'Available',
+        createdAt: '2026-06-01T00:00:00Z',
+      }],
+    });
+    await page.reload({ waitUntil: 'networkidle' });
+    await page.click('#btnHeaderBack');
+    // Process preorder ready sale
+    await page.click('[data-sale-type="preorder_ready"]');
+    await page.click('.btn-process-preorder[data-code="PO-0001"]');
+    await page.fill('#preorderReadySellPrice', '8000000');
+    await page.click('#btnSubmitProcessPreorder');
+    await page.click('#btnSaveSale');
+    await waitForLocalStorageLength(page, 'igood_transactions', 1);
+    await closeReceiptPopup(page);
+    // Verify preorder is Done and device is Sold
+    let preorders = await readLocalStorage(page, 'igood_preorder_requests');
+    let devices = await readLocalStorage(page, 'igood_device_stock');
+    assert(preorders[0].status === 'Done', 'preorder should be marked Done after checkout');
+    assert(devices[0].status === 'Sold', 'device should be marked Sold');
+    // Void the transaction
+    await page.click('[data-tab="page-daily-report"]');
+    await page.evaluate(() => { window.confirm = () => true; });
+    await page.click('.btn-void-transaction');
+    await waitForLocalStorageLength(page, 'igood_transactions', 0);
+    await waitForDeviceStatus(page, 'IP-R1M-01', 'Available');
+    // Verify preorder is reverted to Ready with linkedUnitCode still set
+    preorders = await readLocalStorage(page, 'igood_preorder_requests');
+    devices = await readLocalStorage(page, 'igood_device_stock');
+    assert(preorders[0].status === 'Ready', 'preorder should go back to Ready status');
+    assert(preorders[0].linkedUnitCode === 'IP-R1M-01', 'preorder should keep linkedUnitCode');
+    assert(devices[0].status === 'Available', 'device status should be back to Available');
+  });
+}
+const tests = [
+  testMainNavigationUsesSalesServiceDailyReportOnly,
+  testSalesFlowUsesMainMenuTilesAndCartReview,
+  testAdminCanSetServiceProcessDateAndTechnician,
+  testServiceIntakeCreatesOrderWithoutSalesTransaction,
+  testAdminCompletesServicePaymentAndLaterCost,
+  testAdminCancelsServiceWithInspectionFeeCreatesRevenue,
+  testAdminCancelsServiceWithInspectionFeeCreatesRevenue
+];
+// Split the rest of the tests to fit in list
+tests.push(
+  testAdminCancelsServiceWithZeroFeeCreatesVirtualReportEntry,
+  testImeiInputSavingAndPrintingReceipt,
+  testServiceCartDeletionAndValidation,
+  testTukarTambahFlow,
+  testTukarTambahNegativeSubtotalFlow,
+];
+  testVoidPreorderReadySaleRestoresPreorderStatusAndStock
+);
+try {
+  for (const test of tests) {
+    await test();
+    console.log(`PASS ${test.name}`);
+  }
+} finally {
+  await stopIgoodTestServer();
+}

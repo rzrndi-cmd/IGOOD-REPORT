@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium Tab Showcase - Igood Design System</title>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Remix Icon -->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #3b82f6;
+            --primary-soft: #dbeafe;
+            --primary-glow: #edf4ff;
+            --success: #0d9488;
+            --warning: #ea580c;
+            --danger: #e11d48;
+            --info: #0ea5e9;
+            --neutral-bg: #f4f7fc;
+            --neutral-surface: #ffffff;
+            --text: #0f172a;
+            --text-secondary: #334155;
+            --text-muted: #64748b;
+            --border: #cddbf3;
+            --r-sm: 10px;
+            --r-md: 16px;
+            --r-lg: 18px;
+            --font: 'Inter', -apple-system, sans-serif;
+            --shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.05);
+            --shadow-md: 0 8px 20px rgba(15, 23, 42, 0.08);
+            --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font);
+            background-color: var(--neutral-bg);
+            color: var(--text);
+            padding: 40px 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--text);
+            letter-spacing: -0.025em;
+            margin-bottom: 8px;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        .showcase-section {
+            background-color: var(--neutral-surface);
+            border: 1px solid var(--border);
+            border-radius: var(--r-md);
+            padding: 30px;
+            margin-bottom: 40px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .section-info {
+            margin-bottom: 24px;
+        }
+
+        .section-info h2 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 4px;
+        }
+
+        .section-info p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        /* ──────────────────────────────────────────────────────────
+           STYLE 1: SEGMENTED PILLS (Capsule Tab)
+        ────────────────────────────────────────────────────────── */
+        .tab-segmented-wrapper {
+            background-color: #f1f5f9;
+            border-radius: 99px;
+            padding: 4px;
+            display: inline-flex;
+            width: 100%;
+            max-width: 480px;
+            position: relative;
+            margin-bottom: 20px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .tab-segmented-btn {
+            flex: 1;
+            background: none;
+            border: none;
+            padding: 10px 16px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            cursor: pointer;
+            border-radius: 99px;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .tab-segmented-btn.active {
+            color: var(--primary);
+        }
+
+        /* Sliding background highlight */
+        .tab-segmented-slider {
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            height: calc(100% - 8px);
+            width: calc((100% - 8px) / 3); /* dynamic using JS is safer, but static works for 3 items */
+            background-color: var(--neutral-surface);
+            border-radius: 99px;
+            box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08);
+            transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1;
+        }
+
+        /* ──────────────────────────────────────────────────────────
+           STYLE 2: SLIDING UNDERLINE (Border Bottom Tab)
+        ────────────────────────────────────────────────────────── */
+        .tab-underline-container {
+            border-bottom: 2px solid #e2e8f0;
+            position: relative;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 24px;
+        }
+
+        .tab-underline-btn {
+            background: none;
+            border: none;
+            padding: 12px 4px 16px 4px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+        }
+
+        .tab-underline-btn:hover {
+            color: var(--text);
+        }
+
+        .tab-underline-btn.active {
+            color: var(--primary);
+        }
+
+        .tab-underline-indicator {
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            height: 3px;
+            background-color: var(--primary);
+            border-radius: 99px;
+            transition: var(--transition);
+        }
+
+        /* ──────────────────────────────────────────────────────────
+           STYLE 3: PREMIUM ICON GRID (Card-based Tab)
+        ────────────────────────────────────────────────────────── */
+        .tab-grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .tab-grid-btn {
+            background-color: var(--neutral-surface);
+            border: 1px solid var(--border);
+            border-radius: var(--r-md);
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+        }
+
+        .tab-grid-btn i {
+            font-size: 1.5rem;
+            color: var(--text-secondary);
+            transition: var(--transition);
+        }
+
+        .tab-grid-btn span {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+        }
+
+        .tab-grid-btn:hover {
+            border-color: var(--primary-light);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.05);
+        }
+
+        .tab-grid-btn:hover i {
+            color: var(--primary);
+            transform: scale(1.1);
+        }
+
+        .tab-grid-btn.active {
+            background-color: var(--primary-glow);
+            border-color: var(--primary);
+            box-shadow: 0 6px 16px rgba(37, 99, 235, 0.12);
+        }
+
+        .tab-grid-btn.active i {
+            color: var(--primary);
+        }
+
+        .tab-grid-btn.active span {
+            color: var(--primary);
+        }
+
+        /* ──────────────────────────────────────────────────────────
+           STYLE 4: VERTICAL SIDEBAR TAB
+        ────────────────────────────────────────────────────────── */
+        .tab-vertical-layout {
+            display: flex;
+            gap: 24px;
+            flex-direction: row;
+        }
+
+        @media (max-width: 600px) {
+            .tab-vertical-layout {
+                flex-direction: column;
+            }
+            .tab-vertical-menu {
+                width: 100% !important;
+            }
+        }
+
+        .tab-vertical-menu {
+            width: 220px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .tab-vertical-btn {
+            background: none;
+            border: none;
+            padding: 12px 16px;
+            border-radius: var(--r-sm);
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-align: left;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: var(--transition);
+        }
+
+        .tab-vertical-btn i {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            transition: var(--transition);
+        }
+
+        .tab-vertical-btn:hover {
+            background-color: #f1f5f9;
+            color: var(--text);
+        }
+
+        .tab-vertical-btn.active {
+            background-color: var(--primary-glow);
+            color: var(--primary);
+        }
+
+        .tab-vertical-btn.active i {
+            color: var(--primary);
+        }
+
+        .tab-vertical-content {
+            flex-grow: 1;
+            padding: 16px 20px;
+            background-color: #f8fafc;
+            border-radius: var(--r-md);
+            border: 1px solid #e2e8f0;
+            min-height: 150px;
+        }
+
+
+        /* ──────────────────────────────────────────────────────────
+           COMMON CONTENT CONTAINER & ANIMATION
+        ────────────────────────────────────────────────────────── */
+        .content-box {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: var(--r-md);
+            padding: 24px;
+            margin-top: 16px;
+            position: relative;
+            min-height: 120px;
+            overflow: hidden;
+        }
+
+        .tab-panel {
+            display: none;
+            animation: fadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .tab-panel.active {
+            display: block;
+        }
+
+        .tab-panel h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tab-panel p {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(4px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .tab-badge {
+            background-color: var(--danger);
+            color: white;
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: 99px;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Showcase Komponen Tab</h1>
+        <p>Koleksi desain tab interaktif premium, taktis, dan responsif menggunakan token Igood.</p>
+    </header>
+
+    <!-- SECTION 1: SEGMENTED PILLS -->
+    <div class="showcase-section">
+        <div class="section-info">
+            <h2>1. Segmented Control / Capsule Tab</h2>
+            <p>Cocok untuk pilihan filter bertipe biner atau opsi grup kecil (2-4 item). Sangat hemat tempat dan taktil.</p>
+        </div>
+
+        <div class="tab-segmented-wrapper" id="segmentedTabGroup">
+            <div class="tab-segmented-slider" id="segmentedSlider"></div>
+            <button class="tab-segmented-btn active" data-tab-target="seg-pagi">
+                <i class="ri-sun-line"></i> Shift Pagi
+            </button>
+            <button class="tab-segmented-btn" data-tab-target="seg-malam">
+                <i class="ri-moon-line"></i> Shift Malam
+            </button>
+            <button class="tab-segmented-btn" data-tab-target="seg-semua">
+                <i class="ri-calendar-line"></i> Semua Shift
+            </button>
+        </div>
+
+        <div class="content-box">
+            <div class="tab-panel active" id="seg-pagi">
+                <h3><i class="ri-sun-line" style="color: var(--warning)"></i> Detail Shift Pagi</h3>
+                <p>Jam Kerja: 08:00 - 16:00 WIB. Laporan harian diisi oleh kasir shift pagi sebelum serah terima.</p>
+            </div>
+            <div class="tab-panel" id="seg-malam">
+                <h3><i class="ri-moon-line" style="color: var(--primary)"></i> Detail Shift Malam</h3>
+                <p>Jam Kerja: 16:00 - 22:00 WIB. Mengharuskan tutup buku harian dan penarikan data ke printer Bluetooth.</p>
+            </div>
+            <div class="tab-panel" id="seg-semua">
+                <h3><i class="ri-calendar-line" style="color: var(--success)"></i> Gabungan Semua Shift</h3>
+                <p>Menampilkan komparasi performa pendapatan toko antara shift pagi dan shift malam.</p>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- SECTION 2: SLIDING UNDERLINE -->
+    <div class="showcase-section">
+        <div class="section-info">
+            <h2>2. Sliding Underline Tab</h2>
+            <p>Layout tab modern standar industri. Garis penunjuk bergeser secara mulus sesuai tab yang dipilih.</p>
+        </div>
+
+        <div class="tab-underline-container" id="underlineTabGroup">
+            <div class="tab-underline-indicator" id="underlineIndicator"></div>
+            <button class="tab-underline-btn active" data-tab-target="und-ringkasan">
+                Ringkasan
+            </button>
+            <button class="tab-underline-btn" data-tab-target="und-detail">
+                Detail Transaksi <span class="tab-badge">12</span>
+            </button>
+            <button class="tab-underline-btn" data-tab-target="und-grafik">
+                Grafik Analisis
+            </button>
+        </div>
+
+        <div class="content-box">
+            <div class="tab-panel active" id="und-ringkasan">
+                <h3>Ringkasan Keuangan</h3>
+                <p>Total penjualan hari ini meningkat sebesar 12.5% dibanding kemarin. Total unit iPhone terjual: 5 unit.</p>
+            </div>
+            <div class="tab-panel" id="und-detail">
+                <h3>Detail Transaksi Terkini</h3>
+                <p>Daftar transaksi kasir terperinci dari penjualan aksesoris, unit Android, service, dan tukar tambah.</p>
+            </div>
+            <div class="tab-panel" id="und-grafik">
+                <h3>Grafik Analisis Pendapatan</h3>
+                <p>Visualisasi tren pendapatan mingguan menggunakan diagram garis. Cocok untuk tinjauan owner.</p>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- SECTION 3: ICON GRID TAB -->
+    <div class="showcase-section">
+        <div class="section-info">
+            <h2>3. Premium Icon Grid Tab (Tile Selector)</h2>
+            <p>Desain layout tab kasir yang saat ini digunakan di halaman Input Penjualan Igood. Ukuran tombol minimum 44x44px untuk target sentuh optimal di perangkat mobile.</p>
+        </div>
+
+        <div class="tab-grid-container" id="gridTabGroup">
+            <button class="tab-grid-btn active" data-tab-target="grid-iphone">
+                <i class="ri-smartphone-line"></i>
+                <span>iPhone</span>
+            </button>
+            <button class="tab-grid-btn" data-tab-target="grid-android">
+                <i class="ri-android-line"></i>
+                <span>Android</span>
+            </button>
+            <button class="tab-grid-btn" data-tab-target="grid-aksesoris">
+                <i class="ri-plug-2-line"></i>
+                <span>Aksesoris</span>
+            </button>
+            <button class="tab-grid-btn" data-tab-target="grid-tt">
+                <i class="ri-loop-left-line"></i>
+                <span>Tukar Tambah</span>
+            </button>
+        </div>
+
+        <div class="content-box">
+            <div class="tab-panel active" id="grid-iphone">
+                <h3>Kategori: iPhone</h3>
+                <p>Pilih tipe iPhone (11, 12, 13, 14, 15 Pro Max) beserta nomor IMEI, warna, kondisi, dan status garansi.</p>
+            </div>
+            <div class="tab-panel" id="grid-android">
+                <h3>Kategori: Android</h3>
+                <p>Input merek Android (Samsung, Oppo, Vivo, Xiaomi), kapasitas RAM/Internal, IMEI, dan harga jual bersih.</p>
+            </div>
+            <div class="tab-panel" id="grid-aksesoris">
+                <h3>Kategori: Aksesoris</h3>
+                <p>Pilih produk (charger, case, tempered glass, headset) dengan pencarian cepat nama item.</p>
+            </div>
+            <div class="tab-panel" id="grid-tt">
+                <h3>Kategori: Tukar Tambah</h3>
+                <p>Input detail unit HP lama milik kustomer beserta HP baru yang dibeli dan selisih pembayaran.</p>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- SECTION 4: VERTICAL SIDEBAR TAB -->
+    <div class="showcase-section">
+        <div class="section-info">
+            <h2>4. Vertical Sidebar Tab</h2>
+            <p>Sangat ideal untuk antarmuka Admin Center, Pengaturan, atau tampilan Desktop/Tablet.</p>
+        </div>
+
+        <div class="tab-vertical-layout">
+            <div class="tab-vertical-menu" id="verticalTabGroup">
+                <button class="tab-vertical-btn active" data-tab-target="vert-profil">
+                    <i class="ri-user-settings-line"></i> Profil Toko
+                </button>
+                <button class="tab-vertical-btn" data-tab-target="vert-koneksi">
+                    <i class="ri-database-2-line"></i> Database &amp; Sync
+                </button>
+                <button class="tab-vertical-btn" data-tab-target="vert-printer">
+                    <i class="ri-printer-line"></i> Bluetooth Printer
+                </button>
+            </div>
+
+            <div class="tab-vertical-content">
+                <div class="tab-panel active" id="vert-profil">
+                    <h3>Pengaturan Profil Toko</h3>
+                    <p style="margin-bottom: 12px;">Kelola nama toko, alamat cabang, kontak WhatsApp kustomer, dan logo yang akan dicetak pada struk kasir.</p>
+                    <p style="font-size: 0.8rem; color: var(--text-muted);">Terakhir diperbarui: 26 Juni 2026</p>
+                </div>
+                <div class="tab-panel" id="vert-koneksi">
+                    <h3>Integrasi &amp; Sinkronisasi Supabase</h3>
+                    <p style="margin-bottom: 12px;">Sambungkan database lokal SQLite dengan server cloud Supabase secara real-time. Dilengkapi fitur backup offline.</p>
+                    <p style="font-size: 0.8rem; color: var(--text-muted);">Status Koneksi: Terhubung</p>
+                </div>
+                <div class="tab-panel" id="vert-printer">
+                    <h3>Konfigurasi Printer Kasir</h3>
+                    <p style="margin-bottom: 12px;">Cari dan hubungkan printer Bluetooth Thermal (ukuran kertas 58mm atau 80mm) untuk cetak struk nota langsung.</p>
+                    <p style="font-size: 0.8rem; color: var(--text-muted);">Perangkat Terhubung: RPP02N (58mm)</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        
+        // 1. SEGMENTED CONTROL SLIDER FUNCTION
+        const segmentedGroup = document.getElementById("segmentedTabGroup");
+        const segmentedSlider = document.getElementById("segmentedSlider");
+        const segmentedBtns = segmentedGroup.querySelectorAll(".tab-segmented-btn");
+        
+        function updateSegmentedSlider() {
+            const activeBtn = segmentedGroup.querySelector(".tab-segmented-btn.active");
+            if (activeBtn) {
+                const btnRect = activeBtn.getBoundingClientRect();
+                const containerRect = segmentedGroup.getBoundingClientRect();
+                const offsetLeft = btnRect.left - containerRect.left;
+                
+                segmentedSlider.style.width = `${btnRect.width}px`;
+                segmentedSlider.style.transform = `translateX(${offsetLeft - 4}px)`; // offset for padding
+            }
+        }
+        
+        // Initial call and resize observer to keep slider correctly positioned
+        updateSegmentedSlider();
+        window.addEventListener('resize', updateSegmentedSlider);
+
+        segmentedBtns.forEach(btn => {
+            btn.addEventListener("click", () => {
+                segmentedBtns.forEach(b => b.classList.remove("active"));
+                btn.classList.add("active");
+                updateSegmentedSlider();
+                
+                // Toggle Content
+                const targetId = btn.getAttribute("data-tab-target");
+                const section = btn.closest(".showcase-section");
+                section.querySelectorAll(".tab-panel").forEach(panel => {
+                    panel.classList.remove("active");
+                });
+                section.querySelector(`#${targetId}`).classList.add("active");
+            });
+        });
+
+
+        // 2. SLIDING UNDERLINE FUNCTION
+        const underlineGroup = document.getElementById("underlineTabGroup");
+        const underlineIndicator = document.getElementById("underlineIndicator");
+        const underlineBtns = underlineGroup.querySelectorAll(".tab-underline-btn");
+
+        function updateUnderlineIndicator() {
+            const activeBtn = underlineGroup.querySelector(".tab-underline-btn.active");
+            if (activeBtn) {
+                const btnRect = activeBtn.getBoundingClientRect();
+                const containerRect = underlineGroup.getBoundingClientRect();
+                const offsetLeft = btnRect.left - containerRect.left;
+                
+                underlineIndicator.style.width = `${btnRect.width}px`;
+                underlineIndicator.style.transform = `translateX(${offsetLeft}px)`;
+            }
+        }
+
+        updateUnderlineIndicator();
+        window.addEventListener('resize', updateUnderlineIndicator);
+
+        underlineBtns.forEach(btn => {
+            btn.addEventListener("click", () => {
+                underlineBtns.forEach(b => b.classList.remove("active"));
+                btn.classList.add("active");
+                updateUnderlineIndicator();
+
+                // Toggle Content
+                const targetId = btn.getAttribute("data-tab-target");
+                const section = btn.closest(".showcase-section");
+                section.querySelectorAll(".tab-panel").forEach(panel => {
+                    panel.classList.remove("active");
+                });
+                section.querySelector(`#${targetId}`).classList.add("active");
+            });
+        });
+
+
+        // 3. ICON GRID TAB FUNCTION
+        const gridGroup = document.getElementById("gridTabGroup");
+        const gridBtns = gridGroup.querySelectorAll(".tab-grid-btn");
+
+        gridBtns.forEach(btn => {
+            btn.addEventListener("click", () => {
+                gridBtns.forEach(b => b.classList.remove("active"));
+                btn.classList.add("active");
+
+                // Toggle Content
+                const targetId = btn.getAttribute("data-tab-target");
+                const section = btn.closest(".showcase-section");
+                section.querySelectorAll(".tab-panel").forEach(panel => {
+                    panel.classList.remove("active");
+                });
+                section.querySelector(`#${targetId}`).classList.add("active");
+            });
+        });
+
+
+        // 4. VERTICAL SIDEBAR TAB FUNCTION
+        const verticalGroup = document.getElementById("verticalTabGroup");
+        const verticalBtns = verticalGroup.querySelectorAll(".tab-vertical-btn");
+
+        verticalBtns.forEach(btn => {
+            btn.addEventListener("click", () => {
+                verticalBtns.forEach(b => b.classList.remove("active"));
+                btn.classList.add("active");
+
+                // Toggle Content
+                const targetId = btn.getAttribute("data-tab-target");
+                const section = btn.closest(".showcase-section");
+                section.querySelectorAll(".tab-panel").forEach(panel => {
+                    panel.classList.remove("active");
+                });
+                section.querySelector(`#${targetId}`).classList.add("active");
+            });
+        });
+    });
+</script>
+
+</body>
+</html>

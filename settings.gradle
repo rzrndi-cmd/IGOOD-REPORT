@@ -1,0 +1,12 @@
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+
+rootProject.name = 'Report Keuangan - Igood'
+
+include ':app'
+project(':app').projectDir = new File('android/app')
