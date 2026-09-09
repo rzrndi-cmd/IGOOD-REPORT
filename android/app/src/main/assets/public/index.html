@@ -1,0 +1,2225 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#2563eb">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Igood Report</title>
+    <link rel="icon" href="logo.png" type="image/png">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=3.5">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="jspdf.umd.min.js"></script>
+    <script src="jspdf.plugin.autotable.min.js"></script>
+</head>
+<body>
+
+    <!-- ========== APP HEADER ========== -->
+    <header class="app-header">
+        <div class="brand">
+            <button id="btnHeaderBack" class="btn-header-back" title="Kembali ke Menu Utama" style="display: none;">
+                <i class="ri-arrow-left-line"></i>
+            </button>
+            <img class="brand-logo" src="logo.png" alt="iGood Logo">
+            <div class="brand-text">
+                <h1>IGOOD</h1>
+                <span>Report & Inventory</span>
+            </div>
+        </div>
+        <div class="header-right">
+            <span id="roleBadge" class="role-chip sales" style="display: none !important;">
+                <i class="ri-user-line"></i> Sales
+            </span>
+            <button id="btnHeaderCart" class="header-cart-btn" title="Keranjang" style="display: none;">
+                <i class="ri-shopping-cart-2-line"></i>
+                <span id="headerCartCount" class="cart-badge" style="display: none;">0</span>
+            </button>
+            <button id="btnToggleRole" class="btn-role-switch" title="Switch Role" style="display: none !important;">
+                <i class="ri-shield-user-line"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- ========== EMPLOYEE BAR ========== -->
+    <div id="employeeBar" class="employee-bar">
+        <div class="employee-info">
+            <i class="ri-user-shared-line"></i>
+            <span>Pegawai Aktif: <strong id="activeEmployeeName">Kasir Toko</strong> (<span id="activeEmployeeRole">Sales</span>)</span>
+        </div>
+        <button id="btnChangeAccount" class="btn-change-account" type="button">
+            <i class="ri-refresh-line"></i> Ganti Akun
+        </button>
+    </div>
+
+    <!-- ========== MAIN MENU ========== -->
+    <nav id="bottomNav" class="main-menu-grid hidden" aria-label="Menu utama">
+        <button class="nav-item active" data-main-nav="sales" data-tab="page-sales">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 9h10l-.8 9.2a2 2 0 0 1-2 1.8H9.8a2 2 0 0 1-2-1.8L7 9Z"/><path d="M9 9V7a3 3 0 0 1 6 0v2"/><path d="M9.5 13h5"/></svg>
+            <span>Penjualan</span>
+        </button>
+        <button class="nav-item" data-main-nav="service" data-tab="page-sales" data-sale-type="service">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 5.5 18 2l4 4-3.5 3.5"/><path d="m13 7 4 4"/><path d="M4.5 19.5 13 11"/><path d="M3 21l3.5-1 1-3.5"/><path d="M8 4.5 6.5 3 3 6.5 4.5 8"/></svg>
+            <span>Service</span>
+        </button>
+
+        <button class="nav-item" data-main-nav="report" data-tab="page-daily-report">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4h10a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z"/><path d="M8.5 9h7"/><path d="M8.5 13h7"/><path d="M8.5 17h4"/><path d="M15 3v3"/></svg>
+            <span>Report Harian</span>
+        </button>
+        <button class="nav-item" data-main-nav="admin" data-tab="page-admin">
+            <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" /><rect x="14" y="3" width="7" height="5" /><rect x="14" y="12" width="7" height="9" /><rect x="3" y="16" width="7" height="5" /></svg>
+            <span>ADMIN CENTER</span>
+        </button>
+    </nav>
+
+    <!-- ========== PAGE: HOME LANDING ========== -->
+    <section id="page-home" class="page-content active">
+        <div class="home-hero centered-hero">
+            <div class="home-hero-badge">
+                <span class="badge-dot"></span>
+                <span>Sistem Kasir &amp; Keuangan</span>
+            </div>
+            <h2 class="home-title">Igood <span class="title-highlight">Kasir</span></h2>
+            <p class="home-subtitle">Sistem Kasir &amp; Laporan Keuangan Terpadu</p>
+        </div>
+        
+        <div class="home-menu-grid">
+            <!-- Penjualan - Aksen Biru -->
+            <button type="button" class="home-menu-card accent-blue" id="btnHomeSales">
+                <div class="home-menu-card-inner">
+                    <div class="home-menu-icon-wrapper sales-gradient">
+                        <svg viewBox="0 0 24 24" class="home-menu-icon">
+                            <path d="M6.5 8.5h11l-.9 10.2a2 2 0 0 1-2 1.8H9.4a2 2 0 0 1-2-1.8L6.5 8.5Z"/>
+                            <path d="M9 8.5V7a3 3 0 0 1 6 0v1.5"/>
+                            <path d="M9.5 13h5"/>
+                            <path d="M9.5 16h3"/>
+                        </svg>
+                    </div>
+                    <div class="home-menu-text">
+                        <h3>Penjualan</h3>
+                        <p>Input transaksi unit, aksesoris, preorder &amp; cetak struk</p>
+                    </div>
+                    <svg class="home-menu-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </div>
+            </button>
+            
+            <!-- Service - Aksen Hijau -->
+            <button type="button" class="home-menu-card accent-green" id="btnHomeService">
+                <div class="home-menu-card-inner">
+                    <div class="home-menu-icon-wrapper service-gradient">
+                        <svg viewBox="0 0 24 24" class="home-menu-icon">
+                            <path d="M14.5 5.5 18 2l4 4-3.5 3.5"/>
+                            <path d="m13 7 4 4"/>
+                            <path d="M4.5 19.5 13 11"/>
+                            <path d="M3 21l3.5-1 1-3.5"/>
+                            <path d="M8 4.5 6.5 3 3 6.5 4.5 8"/>
+                        </svg>
+                    </div>
+                    <div class="home-menu-text">
+                        <h3>Service</h3>
+                        <p>Terima, kelola &amp; selesaikan order servis perangkat</p>
+                    </div>
+                    <svg class="home-menu-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </div>
+            </button>
+
+            <!-- Monitoring IMEI - Aksen Cyan -->
+            <button type="button" class="home-menu-card accent-cyan" id="btnHomeMonitoringImei">
+                <div class="home-menu-card-inner">
+                    <div class="home-menu-icon-wrapper monitoring-gradient">
+                        <svg viewBox="0 0 24 24" class="home-menu-icon">
+                            <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z"/>
+                            <path d="M12 6v6l4 2"/>
+                            <circle cx="12" cy="12" r="2"/>
+                        </svg>
+                    </div>
+                    <div class="home-menu-text">
+                        <h3>Monitoring IMEI</h3>
+                        <p>Pantau status pengerjaan &amp; garansi order IMEI &amp; Bea Cukai</p>
+                    </div>
+                    <svg class="home-menu-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </div>
+            </button>
+
+            <!-- Report Harian - Aksen Amber -->
+            <button type="button" class="home-menu-card accent-amber" id="btnHomeReport">
+                <div class="home-menu-card-inner">
+                    <div class="home-menu-icon-wrapper report-gradient">
+                        <svg viewBox="0 0 24 24" class="home-menu-icon">
+                            <path d="M7 4h10a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z"/>
+                            <path d="M8.5 9h7"/>
+                            <path d="M8.5 13h7"/>
+                            <path d="M8.5 17h4"/>
+                            <path d="M15 3v3"/>
+                        </svg>
+                    </div>
+                    <div class="home-menu-text">
+                        <h3>Report Harian</h3>
+                        <p>Rekap keuangan harian, filter shift &amp; export PDF</p>
+                    </div>
+                    <svg class="home-menu-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </div>
+            </button>
+
+            <!-- Admin Center - Aksen Slate -->
+            <button type="button" class="home-menu-card accent-admin" id="btnHomeAdmin">
+                <div class="home-menu-card-inner">
+                    <div class="home-menu-icon-wrapper admin-gradient">
+                        <svg viewBox="0 0 24 24" class="home-menu-icon" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" /><rect x="14" y="3" width="7" height="5" /><rect x="14" y="12" width="7" height="9" /><rect x="3" y="16" width="7" height="5" /></svg>
+                    </div>
+                    <div class="home-menu-text">
+                        <h3>ADMIN CENTER</h3>
+                        <p>Kelola stok HP, aksesoris, beban operasional &amp; laporan keuangan</p>
+                    </div>
+                    <svg class="home-menu-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </div>
+            </button>
+        </div>
+    </section>
+
+    <!-- ========== PAGE: SALES INPUT ========== -->
+    <main id="page-sales" class="page-content">
+        <div class="page-title-row">
+            <div>
+                <h2 id="salesPageTitle">Penjualan</h2>
+                <p id="salesPageSubtitle">Input transaksi sesuai kategori barang.</p>
+            </div>
+        </div>
+
+        <div class="card" id="salesDateTimeCard">
+            <div class="form-grid">
+                <div class="field">
+                    <label>Tanggal</label>
+                    <input type="date" id="saleDate" required>
+                </div>
+                <div class="field">
+                    <label>Shift</label>
+                    <select id="saleShift" required>
+                        <option value="shift pagi & malam">Pagi & Malam</option>
+                        <option value="shift pagi">Pagi</option>
+                        <option value="shift malam">Malam</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="sales-category-grid" role="tablist" aria-label="Kategori item penjualan">
+            <button type="button" class="sale-tab active" data-sale-type="unit_iphone"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 4.17c.66-.81 1.11-1.93.99-3.06-1 .04-2.22.67-2.94 1.5-.64.74-1.2 1.88-1.05 3 .95.07 2.11-.56 3-1.44z"/></svg><span>iPhone</span></button>
+            <button type="button" class="sale-tab" data-sale-type="unit_android"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 18c0 .55.45 1 1 1h1v3c0 .55.45 1 1 1s1-.45 1-1v-3h4v3c0 .55.45 1 1 1s1-.45 1-1v-3h1c.55 0 1-.45 1-1V8H6v10zM3.5 8C2.67 8 2 8.67 2 9.5v7c0 .83.67 1.5 1.5 1.5S5 17.33 5 16.5v-7C5 8.67 4.33 8 3.5 8zm17 0c-.83 0-1.5.67-1.5 1.5v7c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5v-7c0-.83-.67-1.5-1.5-1.5zm-5.8-5.7c.39-.39.39-1.02 0-1.41a.996.996 0 0 0-1.41 0L12 2.1l-1.29-1.3a.996.996 0 0 0-1.41 0c-.39.39-.39 1.02 0 1.41L10.6 3.5C8.01 4.57 6.18 7.07 6 10h12c-.18-2.93-2.01-5.43-4.6-6.5l1.3-1.3zM9 7.5c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm6 0c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1z"/></svg><span>Android</span></button>
+            <button type="button" class="sale-tab" data-sale-type="accessory"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg><span>Aksesoris</span></button>
+            <button type="button" class="sale-tab" data-sale-type="tukar_tambah"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="m16 3 4 4-4 4"/><path d="M20 7H9a4 4 0 0 0-4 4v1"/><path d="m8 21-4-4 4-4"/><path d="M4 17h11a4 4 0 0 0 4-4v-1"/></svg><span>Tukar Tambah</span></button>
+            <button type="button" class="sale-tab" data-sale-type="preorder_ready"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.29 7 12 12 20.71 7"/><line x1="12" y1="22" x2="12" y2="12"/><path d="m9 12 2 2 4-4" stroke-width="2.2"/></svg><span>Preorder Ready</span></button>
+            <button type="button" class="sale-tab" data-sale-type="preorder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/><path d="M16 2h-8"/></svg><span>Pre Order</span></button>
+            <button type="button" class="sale-tab" data-sale-type="order_jasa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg><span>Order Jasa</span></button>
+            <button type="button" class="sale-tab" data-sale-type="other"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/></svg><span>Lain-lain</span></button>
+        </div>
+
+        <div id="salesFormMount"></div>
+        <div id="legacySalesHiddenContainer"></div>
+
+        <div class="sales-layout legacy-sales-layout hidden">
+            <div class="sales-form-side">
+                <div class="card accent-primary">
+                    <div class="card-head">
+                        <h2><i class="ri-file-list-3-line"></i> Laporan Harian</h2>
+                        <button id="btnLoadDraft" class="btn-icon" title="Load Draft"><i class="ri-draft-line"></i></button>
+                    </div>
+
+                    <form id="dailyReportForm" autocomplete="off" onsubmit="event.preventDefault();">
+                        <!-- Date & Shift -->
+                        <div class="form-grid">
+                            <div class="field">
+                                <label>Tanggal</label>
+                                <input type="date" id="reportDate" required>
+                            </div>
+                            <div class="field">
+                                <label>Shift</label>
+                                <select id="reportShift" required>
+                                    <option value="shift pagi & malam">Pagi & Malam</option>
+                                    <option value="shift pagi">Pagi</option>
+                                    <option value="shift malam">Malam</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- UNIT SECTION -->
+                        <div class="section-block">
+                            <div class="section-title">
+                                <span>📱 Unit</span>
+                                <span class="counter" id="unitCount">0</span>
+                            </div>
+                            <div id="unitRepeaterContainer"></div>
+                            <button type="button" class="btn-add" id="btnAddUnitRow">
+                                <i class="ri-add-circle-line"></i> Tambah Unit
+                            </button>
+                        </div>
+
+                        <!-- ACCESSORIES SECTION -->
+                        <div class="section-block">
+                            <div class="section-title">
+                                <span>🔌 Aksesoris</span>
+                                <span class="counter" id="accCount">0</span>
+                            </div>
+                            <div id="accRepeaterContainer"></div>
+                            <button type="button" class="btn-add" id="btnAddAccRow">
+                                <i class="ri-add-circle-line"></i> Tambah Aksesoris
+                            </button>
+                        </div>
+
+                        <!-- SERVICE SECTION -->
+                        <div class="section-block">
+                            <div class="section-title">
+                                <span>🔧 Service</span>
+                                <span class="counter" id="serviceCount">0</span>
+                            </div>
+                            <div id="serviceRepeaterContainer"></div>
+                            <button type="button" class="btn-add" id="btnAddServiceRow">
+                                <i class="ri-add-circle-line"></i> Tambah Service
+                            </button>
+                        </div>
+
+                        <!-- OTHERS SECTION -->
+                        <div class="section-block">
+                            <div class="section-title">
+                                <span>📦 Lain-lain</span>
+                                <span class="counter" id="othersCount">0</span>
+                            </div>
+                            <div id="othersRepeaterContainer"></div>
+                            <button type="button" class="btn-add" id="btnAddOthersRow">
+                                <i class="ri-add-circle-line"></i> Tambah Lain-lain
+                            </button>
+                        </div>
+
+                        <div class="btn-row">
+                            <button type="button" id="btnClearForm" class="btn btn-ghost">
+                                <i class="ri-delete-bin-7-line"></i> Reset
+                            </button>
+                            <button type="button" id="btnSubmitReport" class="btn btn-success">
+                                <i class="ri-save-3-line"></i> Simpan Laporan
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- WA Preview -->
+            <div class="wa-preview-sticky">
+                <div class="card accent-success">
+                    <div class="card-head">
+                        <h2><i class="ri-whatsapp-line"></i> Preview WA</h2>
+                        <span class="badge badge-ok">Live</span>
+                    </div>
+                    <div class="wa-preview" id="whatsappMessageText"></div>
+                    <button id="btnCopyWhatsappText" class="btn btn-primary">
+                        <i class="ri-file-copy-line"></i> Copy Pesan WA
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- ========== PAGE: MONITORING IMEI ========== -->
+    <section id="page-imei-monitoring" class="page-content">
+        <div class="page-title-row">
+            <div>
+                <h2>Monitoring IMEI</h2>
+                <p>Pantau status pendaftaran IMEI dan Bea Cukai.</p>
+            </div>
+        </div>
+        <div id="imeiMonitoringMount"></div>
+    </section>
+
+    <!-- ========== PAGE: REPORT HARIAN ========== -->
+    <section id="page-daily-report" class="page-content">
+        <div class="page-title-row">
+            <div>
+                <h2>Report Harian</h2>
+                <p>Rekap otomatis dari transaksi penjualan tersimpan.</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="form-grid">
+                <div class="field">
+                    <label>Tanggal</label>
+                    <input type="date" id="dailyReportDate">
+                </div>
+                <div class="field">
+                    <label>Shift</label>
+                    <select id="dailyReportShift">
+                        <option value="all">Semua Shift</option>
+                        <option value="shift pagi & malam">Pagi & Malam</option>
+                        <option value="shift pagi">Pagi</option>
+                        <option value="shift malam">Malam</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div id="dailyReportSummary" class="report-summary-grid"></div>
+
+        <div class="card">
+            <div class="card-head">
+                <h2><i class="ri-whatsapp-line"></i> Teks WhatsApp</h2>
+                <span class="badge badge-ok">Auto</span>
+            </div>
+            <div class="wa-preview" id="dailyReportWhatsappText"></div>
+            <button type="button" id="btnCopyDailyReportWa" class="btn btn-primary">
+                <i class="ri-share-line"></i> Bagikan Report
+            </button>
+        </div>
+
+        <div class="card">
+            <div class="card-head">
+                <h2><i class="ri-list-check-2"></i> Data Transaksi</h2>
+            </div>
+            <div id="dailyReportTransactionList" class="transaction-list"></div>
+        </div>
+    </section>
+
+    <!-- ========== PAGE: ADMIN ========== -->
+    <section id="page-admin" class="page-content">
+        <div class="admin-dark-card">
+            <div class="admin-dark-card-content">
+                <div class="admin-dark-badge">
+                    <span class="admin-dark-dot"></span>
+                    <span>Admin Workspace</span>
+                </div>
+                <h2 class="admin-dark-title">Admin Center</h2>
+                <p class="admin-dark-subtitle">Kelola inventaris, stok produk, dan laporan keuangan</p>
+            </div>
+            <button id="btnExitAdminMode" type="button" class="btn-dark-exit" title="Kembali ke Mode Kasir">
+                <i class="ri-logout-box-r-line"></i>
+                <span>Keluar Admin</span>
+            </button>
+        </div>
+
+        <div class="admin-tabs">
+            <button class="admin-tab" data-panel="admin-dashboard">
+                <i class="ri-dashboard-3-line"></i>
+                <div class="admin-tab-info">
+                    <span class="admin-tab-title">Dashboard</span>
+                </div>
+            </button>
+            <button class="admin-tab" data-panel="admin-devices">
+                <i class="ri-smartphone-line"></i>
+                <div class="admin-tab-info">
+                    <span class="admin-tab-title">Stok HP</span>
+                </div>
+            </button>
+            <button class="admin-tab" data-panel="admin-preorders">
+                <i class="ri-reserved-line"></i>
+                <div class="admin-tab-info">
+                    <span class="admin-tab-title">Preorder</span>
+                </div>
+            </button>
+            <button class="admin-tab" data-panel="admin-group-order-jasa">
+                <i class="ri-file-list-2-line"></i>
+                <div class="admin-tab-info">
+                    <span class="admin-tab-title">Order Jasa</span>
+                </div>
+            </button>
+
+            <button class="admin-tab" data-panel="admin-accessories">
+                <i class="ri-plug-line"></i>
+                <div class="admin-tab-info">
+                    <span class="admin-tab-title">Aksesoris</span>
+                </div>
+            </button>
+            <button class="admin-tab" data-panel="admin-smart-inventory">
+                <i class="ri-lightbulb-flash-line"></i>
+                <div class="admin-tab-info">
+                    <span class="admin-tab-title">Stok Cerdas &amp; Alert</span>
+                </div>
+            </button>
+
+            <button class="admin-tab" data-panel="admin-group-kelola-servis">
+                <i class="ri-tools-fill"></i>
+                <div class="admin-tab-info">
+                    <span class="admin-tab-title">Kelola Servis</span>
+                </div>
+            </button>
+
+            <button class="admin-tab" data-panel="admin-other">
+                <i class="ri-price-tag-3-line"></i>
+                <div class="admin-tab-info">
+                    <span class="admin-tab-title">Lain-lain</span>
+                </div>
+            </button>
+            <button class="admin-tab" data-panel="admin-expenses" style="display: none !important;">
+                <i class="ri-money-dollar-circle-line"></i>
+                <div class="admin-tab-info">
+                    <span class="admin-tab-title">Beban Operasional</span>
+                </div>
+            </button>
+            <button class="admin-tab" data-panel="admin-sales-recap">
+                <i class="ri-pie-chart-2-line" style="color: var(--primary);"></i>
+                <div class="admin-tab-info">
+                    <span class="admin-tab-title" style="font-weight: 700;">Rekap Penjualan</span>
+                </div>
+            </button>
+            <button class="admin-tab" data-panel="admin-history">
+                <i class="ri-history-line"></i>
+                <div class="admin-tab-info">
+                    <span class="admin-tab-title">Riwayat</span>
+                </div>
+            </button>
+            <button class="admin-tab" data-panel="admin-employees">
+                <i class="ri-user-shared-line"></i>
+                <div class="admin-tab-info">
+                    <span class="admin-tab-title">Data Pegawai</span>
+                </div>
+            </button>
+            <button class="admin-tab" data-panel="admin-reset">
+                <i class="ri-refresh-line" style="color: #ef4444;"></i>
+                <div class="admin-tab-info">
+                    <span class="admin-tab-title" style="color: #ef4444; font-weight: 600;">Reset Data</span>
+                </div>
+            </button>
+        </div>
+        <button id="btnBackToAdminMenu" class="btn-back-admin" type="button"><i class="ri-arrow-left-line"></i> Kembali ke Menu Admin</button>
+
+        <!-- Panel: Group Order Jasa -->
+        <div id="admin-group-order-jasa" class="admin-panel">
+            <h3 style="font-size:15px; margin-bottom: 15px;"><i class="ri-file-list-2-line" style="color:var(--primary-light);"></i> Grup Order Jasa</h3>
+            <div class="admin-tabs-sub-grid">
+                <button class="admin-sub-tab" data-panel="admin-imei">
+                    <i class="ri-barcode-box-line" style="font-size: 26px; color: var(--primary); margin-bottom: 10px;"></i>
+                    <div class="admin-sub-tab-info">
+                        <span class="admin-sub-tab-title">Order IMEI</span>
+                    </div>
+                </button>
+                <button class="admin-sub-tab" data-panel="admin-beacukai">
+                    <i class="ri-bank-card-line" style="font-size: 26px; color: var(--primary); margin-bottom: 10px;"></i>
+                    <div class="admin-sub-tab-info">
+                        <span class="admin-sub-tab-title">IMEI Bea Cukai</span>
+                    </div>
+                </button>
+                <button class="admin-sub-tab" data-panel="admin-icloud">
+                    <i class="ri-cloud-line" style="font-size: 26px; color: var(--primary); margin-bottom: 10px;"></i>
+                    <div class="admin-sub-tab-info">
+                        <span class="admin-sub-tab-title">Pembuatan iCloud</span>
+                    </div>
+                </button>
+            </div>
+        </div>
+
+        <!-- Panel: Group Kelola Servis -->
+        <div id="admin-group-kelola-servis" class="admin-panel">
+            <h3 style="font-size:15px; margin-bottom: 15px;"><i class="ri-tools-fill" style="color:var(--primary-light);"></i> Grup Kelola Servis</h3>
+            <div class="admin-tabs-sub-grid">
+                <button class="admin-sub-tab" data-panel="admin-services" data-sidebar-service-filter="masuk">
+                    <i class="ri-inbox-archive-line" style="font-size: 26px; color: var(--primary); margin-bottom: 10px;"></i>
+                    <div class="admin-sub-tab-info">
+                        <span class="admin-sub-tab-title">Servis Masuk</span>
+                    </div>
+                </button>
+                <button class="admin-sub-tab" data-panel="admin-services" data-sidebar-service-filter="keluar">
+                    <i class="ri-checkbox-circle-line" style="font-size: 26px; color: var(--primary); margin-bottom: 10px;"></i>
+                    <div class="admin-sub-tab-info">
+                        <span class="admin-sub-tab-title">Servis Keluar</span>
+                    </div>
+                </button>
+                <button class="admin-sub-tab" data-panel="admin-services" data-sidebar-service-filter="cancel">
+                    <i class="ri-close-circle-line" style="font-size: 26px; color: var(--primary); margin-bottom: 10px;"></i>
+                    <div class="admin-sub-tab-info">
+                        <span class="admin-sub-tab-title">Servis Cancel</span>
+                    </div>
+                </button>
+                <button class="admin-sub-tab" data-panel="admin-technicians">
+                    <i class="ri-user-settings-line" style="font-size: 26px; color: var(--primary); margin-bottom: 10px;"></i>
+                    <div class="admin-sub-tab-info">
+                        <span class="admin-sub-tab-title">Kelola Teknisi</span>
+                    </div>
+                </button>
+            </div>
+        </div>
+
+        <!-- Panel: Dashboard -->
+        <div id="admin-dashboard" class="admin-panel">
+            <div class="card" style="padding:14px;">
+                <div class="flex-between" style="flex-wrap:wrap;gap:8px;">
+                    <h3 style="font-size:14px;display:flex;align-items:center;gap:6px;">
+                        <i class="ri-filter-3-line" style="color:var(--primary-light);"></i> Filter
+                    </h3>
+                    <div class="flex gap-sm">
+                        <select id="dashboardRangeFilter" style="width:150px;padding:8px;font-size:12px;">
+                            <option value="all">Semua</option>
+                            <option value="today">Hari Ini</option>
+                            <option value="7days" selected>7 Hari</option>
+                            <option value="month">Bulan Ini</option>
+                        </select>
+                        <button id="btnExportAllSalesPdf" class="btn btn-sm btn-primary" style="width:auto;">
+                            <i class="ri-file-pdf-2-line"></i> PDF
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="metrics-row">
+                <div class="metric">
+                    <div class="metric-icon rev"><i class="ri-money-dollar-circle-line"></i></div>
+                    <div class="metric-data"><h4>Pendapatan</h4><div class="val" id="metricTotalRevenue">Rp 0</div></div>
+                </div>
+                <div class="metric">
+                    <div class="metric-icon profit"><i class="ri-hand-coin-line"></i></div>
+                    <div class="metric-data"><h4>Profit</h4><div class="val" id="metricTotalProfit">Rp 0</div></div>
+                </div>
+                <div class="metric">
+                    <div class="metric-icon cogs"><i class="ri-shopping-bag-3-line"></i></div>
+                    <div class="metric-data"><h4>COGS</h4><div class="val" id="metricTotalCOGS">Rp 0</div></div>
+                </div>
+                <div class="metric">
+                    <div class="metric-icon stock"><i class="ri-database-2-line"></i></div>
+                    <div class="metric-data"><h4>Sisa Stok</h4><div class="val" id="metricInventoryValue">Rp 0</div></div>
+                </div>
+            </div>
+
+            <div class="card"><div class="card-head"><h3><i class="ri-funds-line"></i> Tren Penjualan</h3></div><div class="chart-wrap"><canvas id="revenueTrendChart"></canvas></div></div>
+
+            <div class="form-grid">
+                <div class="card"><div class="card-head"><h3><i class="ri-pie-chart-line"></i> Pembayaran</h3></div><div class="chart-wrap"><canvas id="paymentMethodChart"></canvas></div></div>
+                <div class="card"><div class="card-head"><h3><i class="ri-bar-chart-grouped-line"></i> Kategori</h3></div><div class="chart-wrap"><canvas id="categoryBreakdownChart"></canvas></div></div>
+            </div>
+
+            <div class="card" id="salesPerformanceCard">
+                <div class="card-head"><h3><i class="ri-user-star-line"></i> Performa Sales</h3></div>
+                <div class="tbl-wrap" style="max-height:220px;overflow-y:auto;">
+                    <table>
+                        <thead><tr><th>Sales</th><th>Unit HP Terjual</th></tr></thead>
+                        <tbody id="salesPerformanceTableBody">
+                            <tr><td colspan="2" class="text-dim" style="text-align:center;">Tidak ada data</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card" id="monthlyRecapCard">
+                <div class="card-head">
+                    <h3><i class="ri-calendar-check-line"></i> Rekap Bulanan</h3>
+                    <span class="badge badge-info">Server Sync</span>
+                </div>
+                <div class="monthly-recap-toolbar">
+                    <input type="month" id="monthlyRecapMonth" aria-label="Bulan rekap penjualan">
+                    <button type="button" id="btnSyncMonthlyRecap" class="btn btn-sm btn-primary">
+                        <i class="ri-refresh-line"></i> Sync Server
+                    </button>
+                </div>
+                <div id="monthlyRecapSummary" class="recap-summary">0 transaksi | Rp 0</div>
+                <div class="tbl-wrap" style="max-height:280px;overflow:auto;">
+                    <table>
+                        <thead><tr><th>Tanggal</th><th>Kode</th><th>Kategori</th><th>Item</th><th>User</th><th>Sales</th><th>Qty</th><th>Total</th><th>Pay</th></tr></thead>
+                        <tbody id="monthlyRecapTableBody">
+                            <tr><td colspan="9" class="text-dim" style="text-align:center;">Tidak ada data</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel: HP Stock -->
+        <div id="admin-devices" class="admin-panel">
+            <div class="flex-between mb-md">
+                <h3 style="font-size:16px; font-weight: 800;"><i class="ri-smartphone-line" style="color:var(--primary);"></i> Stok HP & iPad</h3>
+                <button id="btnAddNewDevice" class="btn btn-sm btn-primary" style="width:auto;"><i class="ri-add-line"></i> Input Unit</button>
+            </div>
+
+            <!-- Quick Stats Chips -->
+            <div class="metrics-row" style="margin-bottom: 12px;">
+                <div class="metric">
+                    <div class="metric-icon stock"><i class="ri-smartphone-line"></i></div>
+                    <div class="metric-data">
+                        <h4>Unit Ready</h4>
+                        <div class="val" id="statStockReadyCount">0 Unit</div>
+                    </div>
+                </div>
+                <div class="metric">
+                    <div class="metric-icon profit"><i class="ri-money-dollar-circle-line"></i></div>
+                    <div class="metric-data">
+                        <h4>Total Modal Ready</h4>
+                        <div class="val" id="statStockReadyCost">Rp 0</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- datalist for iPhone models -->
+            <datalist id="iphoneModelsList">
+                <option value="iPhone 16 Pro Max"><option value="iPhone 16 Pro"><option value="iPhone 16 Plus"><option value="iPhone 16"><option value="iPhone 16e">
+                <option value="iPhone 15 Pro Max"><option value="iPhone 15 Pro"><option value="iPhone 15 Plus"><option value="iPhone 15">
+                <option value="iPhone 14 Pro Max"><option value="iPhone 14 Pro"><option value="iPhone 14 Plus"><option value="iPhone 14">
+                <option value="iPhone 13 Pro Max"><option value="iPhone 13 Pro"><option value="iPhone 13 Mini"><option value="iPhone 13">
+                <option value="iPhone 12 Pro Max"><option value="iPhone 12 Pro"><option value="iPhone 12 Mini"><option value="iPhone 12">
+                <option value="iPhone 11 Pro Max"><option value="iPhone 11 Pro"><option value="iPhone 11">
+                <option value="iPhone SE 3"><option value="iPhone SE 2"><option value="iPhone SE (2016)">
+                <option value="iPhone XS Max"><option value="iPhone XS"><option value="iPhone XR">
+                <option value="iPhone X"><option value="iPhone 8 Plus"><option value="iPhone 8"><option value="iPhone 7 Plus"><option value="iPhone 7">
+                <option value="iPhone 6s Plus"><option value="iPhone 6s"><option value="iPhone 6 Plus"><option value="iPhone 6">
+                <option value="iPhone 5s"><option value="iPhone 5c"><option value="iPhone 5"><option value="iPhone 4s"><option value="iPhone 4">
+                <option value="iPad Pro M4 13&quot;"><option value="iPad Pro M4 11&quot;"><option value="iPad Pro M2 12.9&quot;"><option value="iPad Pro M2 11&quot;">
+                <option value="iPad Air M2 13&quot;"><option value="iPad Air M2 11&quot;"><option value="iPad Air M1 10.9&quot;">
+                <option value="iPad 10.9 Gen 10"><option value="iPad 10.2 Gen 9"><option value="iPad 10.2 Gen 8">
+                <option value="iPad Mini 7"><option value="iPad Mini 6"><option value="iPad Mini 5">
+            </datalist>
+
+            <div id="addDeviceFormContainer" class="add-form-panel">
+                <h4><i class="ri-add-circle-line"></i> Input Unit Baru</h4>
+                <form id="newDeviceStockForm">
+                    <!-- Section 1: Informasi Dasar Unit -->
+                    <div class="form-section-block">
+                        <div class="form-section-title"><i class="ri-smartphone-line"></i> Informasi Dasar Unit</div>
+                        <div class="form-grid cols-3">
+                            <div class="field">
+                                <label>Kategori Unit</label>
+                                <select id="stockDeviceCategory" required>
+                                    <option value="iphone">Unit iPhone</option>
+                                    <option value="android">Unit Android</option>
+                                    <option value="ipad">Unit iPad</option>
+                                </select>
+                            </div>
+                            <div class="field">
+                                <label>Kondisi</label>
+                                <select id="stockDeviceCondition" required>
+                                    <option value="New">New</option>
+                                    <option value="Bekas">Bekas</option>
+                                </select>
+                            </div>
+                            <div class="field" id="stockDeviceBrandGroup">
+                                <label>Brand</label>
+                                <input type="text" id="stockDeviceBrand" placeholder="Samsung / Xiaomi / dll">
+                            </div>
+                        </div>
+                        <div class="form-grid cols-2">
+                            <div class="field" style="position: relative;">
+                                <label>Tipe / Model</label>
+                                <div style="position: relative; display: flex; align-items: center;">
+                                    <input type="text" id="stockDeviceModel" list="iphoneModelsList" placeholder="Ketik atau pilih model..." autocomplete="off" required style="padding-right: 30px;">
+                                    <button type="button" id="btnToggleModelSuggestions" style="position: absolute; right: 0; top: 0; bottom: 0; width: 30px; background: transparent; border: none; cursor: pointer; color: var(--text-dim); display: flex; align-items: center; justify-content: center;" title="Pilih Model">
+                                        <i class="ri-arrow-down-s-line" style="font-size: 16px;"></i>
+                                    </button>
+                                </div>
+                                <div id="stockModelSuggestions" class="autocomplete-box"></div>
+                            </div>
+                            <div class="field"><label>Storage</label><select id="stockDeviceStorage" required><option value="128GB" selected>128GB</option><option value="256GB">256GB</option><option value="64GB">64GB</option><option value="512GB">512GB</option><option value="1TB">1TB</option><option value="32GB">32GB</option></select></div>
+                        </div>
+                    </div>
+
+                    <!-- Section 2: Pembelian & Logistik -->
+                    <div class="form-section-block">
+                        <div class="form-section-title"><i class="ri-hand-coin-line"></i> Pembelian & Logistik</div>
+                        <div class="form-grid cols-3">
+                            <div class="field"><label>Perolehan</label><select id="stockDeviceAcquisition" required><option value="PB">Pribadi (PB)</option><option value="KS">Konsinyasi (KS)</option><option value="TT">Tukar Tambah (TT)</option></select></div>
+                            <div class="field"><label>Garansi</label><select id="stockDeviceWarranty" required><option value="IBX">Resmi (R)</option><option value="INT">Inter (I)</option><option value="BEA">Beacukai (BC)</option></select></div>
+                            <div class="field" id="consignmentShopGroup" style="display:none;"><label>Supplier</label><input type="text" id="stockDeviceSupplier" placeholder="Nama Toko"></div>
+                        </div>
+                        <div class="form-grid cols-3">
+                            <div class="field"><label>Tgl Beli</label><input type="date" id="stockDevicePurchaseDate" required></div>
+                            <div class="field"><label>Modal Rp</label><input type="text" inputmode="numeric" id="stockDeviceCost" placeholder="Harga Beli" required></div>
+                            <div class="field" style="display: none;"><label>Jumlah Unit</label><input type="number" id="stockDeviceQty" min="1" max="99" value="1" required></div>
+                        </div>
+                    </div>
+
+                    <!-- Section 3: Identitas Unik -->
+                    <div class="form-section-block">
+                        <div class="form-section-title" style="display: flex; justify-content: space-between; align-items: center;">
+                            <span><i class="ri-key-line"></i> Identitas Unik & Batch Unit</span>
+                            <button type="button" class="btn btn-sm btn-ghost" id="btnAddBatchDeviceRow" style="width: auto; padding: 6px 10px; display: inline-flex; align-items: center; gap: 4px;">
+                                <i class="ri-add-line"></i> Tambah Unit (Batch)
+                            </button>
+                        </div>
+                        <div id="deviceBatchIdentitiesContainer" style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
+                            <!-- Dynamic rows of Warna, IMEI, Custom Code will be added here -->
+                        </div>
+                    </div>
+
+                    <div class="btn-row"><button type="button" id="btnCancelAddDevice" class="btn btn-sm btn-ghost">Batal</button><button type="submit" class="btn btn-sm btn-success">Simpan</button></div>
+                </form>
+            </div>
+
+            <div id="deviceLabelNotice" class="notice-bar">
+                <div><h4><i class="ri-checkbox-circle-line"></i> Unit Ditambahkan!</h4><p class="text-sm mt-sm">Kode: <span id="noticeDeviceCode" class="notice-code">-</span></p><p class="text-xs text-dim">Tulis kode ini di label stiker fisik</p></div>
+                <button onclick="document.getElementById('deviceLabelNotice').classList.remove('show')" class="btn-icon"><i class="ri-close-line"></i></button>
+            </div>
+
+            <div class="search-row">
+                <input type="text" id="searchDeviceStock" placeholder="Cari kode, model...">
+                <select id="filterDeviceStatus"><option value="all">Semua</option><option value="Available" selected>Ready</option><option value="Sold">Terjual</option></select>
+                <button id="btnExportDevicePdf" class="btn-icon" title="PDF"><i class="ri-file-pdf-2-line"></i></button>
+            </div>
+            <div id="deviceStockTableBody" class="stock-accordion-list"></div>
+        </div>
+
+        <!-- Panel: Preorder Requests -->
+        <div id="admin-preorders" class="admin-panel">
+            <div class="flex-between mb-md">
+                <h3 style="font-size:15px;"><i class="ri-reserved-line" style="color:var(--primary-light);"></i> Request Preorder</h3>
+                <span class="text-xs text-dim">Input modal dan status ready dikelola admin</span>
+            </div>
+            <div class="search-row">
+                <input type="text" id="searchAdminPreorder" placeholder="Cari kode PO, nama, request...">
+                <select id="filterAdminPreorderStatus">
+                    <option value="all">Semua Status</option>
+                    <option value="Preorder" selected>Preorder (DP)</option>
+                    <option value="Ready">Ready (Siap Ambil)</option>
+                    <option value="Done">Selesai (Lunas)</option>
+                </select>
+            </div>
+            <div id="preorderRequestsTableBody" class="stock-accordion-list"></div>
+        </div>
+
+        <!-- Panel: Order IMEI Status Management -->
+        <div id="admin-imei" class="admin-panel">
+            <div class="flex-between mb-md">
+                <h3 style="font-size:15px;"><i class="ri-tools-line" style="color:var(--primary-light);"></i> Kelola Status Order IMEI</h3>
+                <span class="text-xs text-dim">Ubah status order IMEI user</span>
+            </div>
+            <div class="search-row">
+                <input type="text" id="searchAdminImei" placeholder="Cari IMEI, nama user, unit...">
+                <select id="filterAdminImeiStatus">
+                    <option value="all">Semua Status</option>
+                    <option value="Masuk">Masuk</option>
+                    <option value="On Progress">On Progress</option>
+                    <option value="Selesai">Selesai</option>
+                </select>
+            </div>
+            <div id="adminImeiTableBody" class="stock-accordion-list"></div>
+        </div>
+
+        <!-- Panel: IMEI Bea Cukai Status Management -->
+        <div id="admin-beacukai" class="admin-panel">
+            <div class="flex-between mb-md">
+                <h3 style="font-size:15px;"><i class="ri-bank-card-line" style="color:var(--primary-light);"></i> Kelola Status IMEI Bea Cukai</h3>
+                <span class="text-xs text-dim">Ubah status Bea Cukai user</span>
+            </div>
+            <div class="search-row">
+                <input type="text" id="searchAdminBeaCukai" placeholder="Cari IMEI, nama user, unit...">
+                <select id="filterAdminBeaCukaiStatus">
+                    <option value="all">Semua Status</option>
+                    <option value="Masuk">Masuk</option>
+                    <option value="On Progress">On Progress</option>
+                    <option value="Selesai">Selesai</option>
+                </select>
+            </div>
+            <div id="adminBeaCukaiTableBody" class="stock-accordion-list"></div>
+        </div>
+
+        <!-- Panel: Pembuatan iCloud Management (Read-Only) -->
+        <div id="admin-icloud" class="admin-panel">
+            <div class="flex-between mb-md">
+                <h3 style="font-size:15px;"><i class="ri-cloud-line" style="color:var(--primary-light);"></i> Data Pembuatan iCloud</h3>
+                <span class="text-xs text-dim">Hanya bersifat Read-Only</span>
+            </div>
+            <div class="search-row">
+                <input type="text" id="searchAdminIcloud" placeholder="Cari nama, email, no. telp...">
+            </div>
+            <div id="adminIcloudTableBody" class="stock-accordion-list"></div>
+        </div>
+
+        <!-- Panel: Employee Management -->
+        <div id="admin-employees" class="admin-panel">
+            <div class="employee-compact-wrapper" style="max-width: 620px; margin: 0 auto;">
+                
+                <!-- Modern Compact Header -->
+                <div class="flex-between mb-md" style="align-items: center; background: #ffffff; padding: 12px 16px; border-radius: 12px; border: 1px solid var(--border-color); box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <div style="width: 38px; height: 38px; border-radius: 10px; background: rgba(59, 130, 246, 0.1); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 18px;">
+                            <i class="ri-user-shared-line"></i>
+                        </div>
+                        <div>
+                            <h3 style="font-size: 15px; font-weight: 700; margin: 0; line-height: 1.2;">Data Pegawai</h3>
+                            <span class="text-xs text-dim">Kelola staf & hak akses sistem</span>
+                        </div>
+                    </div>
+                    <button id="btnAddNewEmployee" class="btn btn-sm btn-primary" style="width: auto; padding: 7px 14px; border-radius: 8px; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
+                        <i class="ri-user-add-line"></i> Tambah
+                    </button>
+                </div>
+
+                <!-- Form: Add/Edit Employee (Compact Panel) -->
+                <div id="addEmployeeFormContainer" class="add-form-panel" style="display: none; background: #ffffff; border: 1px solid var(--border-color); border-radius: 12px; padding: 16px; margin-bottom: 14px; box-shadow: 0 4px 14px rgba(0,0,0,0.05);">
+                    <div class="flex-between mb-sm" style="border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">
+                        <h4 style="font-size: 13px; font-weight: 700; color: var(--text-main); margin: 0; display: flex; align-items: center; gap: 6px;">
+                            <i class="ri-user-settings-line" style="color: var(--primary);"></i> Form Data Pegawai
+                        </h4>
+                        <span class="text-xs text-dim">Semua kolom wajib diisi</span>
+                    </div>
+                    <form id="employeeForm">
+                        <input type="hidden" id="editEmployeeId">
+                        <div class="form-grid cols-3" style="gap: 10px;">
+                            <div class="field" style="margin-bottom: 0;">
+                                <label style="font-size: 11px; font-weight: 600;">Nama *</label>
+                                <input type="text" id="employeeName" placeholder="Nama pegawai" required style="font-size: 13px; padding: 7px 10px; border-radius: 8px;">
+                            </div>
+                            <div class="field" style="margin-bottom: 0;">
+                                <label style="font-size: 11px; font-weight: 600;">Jabatan *</label>
+                                <select id="employeeJobTitle" style="font-size: 13px; padding: 7px 10px; border-radius: 8px;">
+                                    <option value="Selles">Selles</option>
+                                    <option value="Konten Kreator">Konten Kreator</option>
+                                </select>
+                            </div>
+                            <div class="field" style="margin-bottom: 0;">
+                                <label style="font-size: 11px; font-weight: 600;">Role *</label>
+                                <select id="employeeRole" style="font-size: 13px; padding: 7px 10px; border-radius: 8px;">
+                                    <option value="Selles">Selles</option>
+                                    <option value="Admin">Admin</option>
+                                    <option value="Super Admin">Super Admin</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="flex justify-end gap-sm" style="margin-top: 12px;">
+                            <button type="button" id="btnCancelEmployee" class="btn btn-sm btn-ghost" style="width: auto; padding: 6px 14px; border-radius: 8px;">Batal</button>
+                            <button type="submit" class="btn btn-sm btn-primary" style="width: auto; padding: 6px 16px; border-radius: 8px; font-weight: 600;">Simpan</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Compact Search Box -->
+                <div class="search-row" style="margin-bottom: 12px;">
+                    <div style="position: relative; width: 100%;">
+                        <i class="ri-search-line" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-dim); font-size: 14px;"></i>
+                        <input type="text" id="searchAdminEmployee" placeholder="Cari nama, jabatan, atau role pegawai..." style="padding-left: 34px; font-size: 13px; border-radius: 10px; height: 38px; background: #ffffff; width: 100%;">
+                    </div>
+                </div>
+
+                <!-- Modern Compact Employee Cards List Container -->
+                <div id="adminEmployeesTableBody" class="employee-compact-list" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px;"></div>
+
+                <!-- Sales Performance Section (Minimal Modern) -->
+                <div style="background: #ffffff; border: 1px solid var(--border-color); border-radius: 12px; padding: 14px 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
+                    <div class="flex-between mb-sm" style="align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <i class="ri-line-chart-line" style="color: var(--primary); font-size: 15px;"></i>
+                            <h4 style="font-size: 13px; font-weight: 700; margin: 0;">Performa Penjualan Sales</h4>
+                        </div>
+                        <span class="text-xs text-dim">Rekap Omset Staf</span>
+                    </div>
+                    <div id="adminEmployeePerformanceTableBody" style="display: flex; flex-direction: column; gap: 6px;"></div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Panel: Accessories Stock -->
+        <div id="admin-accessories" class="admin-panel">
+            <div class="flex-between mb-md">
+                <h3 style="font-size:15px;"><i class="ri-plug-line" style="color:var(--primary-light);"></i> Stok Aksesoris</h3>
+                <button id="btnAddNewAcc" class="btn btn-sm btn-primary" style="width:auto;"><i class="ri-add-line"></i> Tambah</button>
+            </div>
+
+            <div id="addAccFormContainer" class="add-form-panel">
+                <h4><i class="ri-add-circle-line"></i> Input Aksesoris Baru</h4>
+                <form id="newAccStockForm">
+                    <!-- Section 1: Informasi Aksesoris -->
+                    <div class="form-section-block">
+                        <div class="form-section-title"><i class="ri-plug-line"></i> Informasi Aksesoris</div>
+                        <div class="form-grid cols-3">
+                            <div class="field"><label>Kategori</label><select id="stockAccCategory" required><option value="A">A - Adaptor</option><option value="K">K - Kabel</option><option value="C">C - Case</option><option value="T">T - Tempered</option><option value="H">H - Handsfree</option><option value="L">L - Lainnya</option></select></div>
+                            <div class="field"><label>Brand</label><select id="stockAccBrand" required><option value="APL">Apple</option><option value="ANK">Anker</option><option value="OEM">OEM</option><option value="custom">Custom</option></select><input type="text" id="stockAccBrandCustom" placeholder="Brand baru" style="display:none;margin-top:6px;"></div>
+                            <div class="field"><label>Nama & Detail</label><input type="text" id="stockAccModel" placeholder="Adaptor 20W White" required></div>
+                        </div>
+                    </div>
+
+                    <!-- Section 2: Inventaris & Harga -->
+                    <div class="form-section-block">
+                        <div class="form-section-title"><i class="ri-hand-coin-line"></i> Inventaris & Harga</div>
+                        <div class="form-grid cols-3">
+                            <div class="field"><label>Qty</label><input type="number" id="stockAccQty" min="1" value="10" required></div>
+                            <div class="field"><label>Input Modal</label><select id="stockAccCostMode"><option value="unit">Harga Satuan</option><option value="total">Harga Total</option></select></div>
+                            <div class="field"><label>Modal Satuan Rp</label><input type="text" inputmode="numeric" id="stockAccCost" placeholder="Per pcs" required></div>
+                        </div>
+                        <div class="form-grid cols-3">
+                            <div class="field"><label>Modal Total Rp</label><input type="text" inputmode="numeric" id="stockAccTotalCost" placeholder="Total modal semua qty"></div>
+                            <div class="field"><label>Jual Rp</label><input type="text" inputmode="numeric" id="stockAccSell" placeholder="Per pcs" required></div>
+                        </div>
+                    </div>
+                    <div class="btn-row"><button type="button" id="btnCancelAddAcc" class="btn btn-sm btn-ghost">Batal</button><button type="submit" class="btn btn-sm btn-success">Simpan</button></div>
+                </form>
+            </div>
+
+            <div id="accLabelNotice" class="notice-bar">
+                <div><h4><i class="ri-checkbox-circle-line"></i> Aksesoris Disimpan!</h4><p class="text-sm mt-sm">Kode: <span id="noticeAccCode" class="notice-code">-</span></p></div>
+                <button onclick="document.getElementById('accLabelNotice').classList.remove('show')" class="btn-icon"><i class="ri-close-line"></i></button>
+            </div>
+
+            <div class="search-row">
+                <input type="text" id="searchAccStock" placeholder="Cari kode, nama...">
+                <select id="filterAccStatus"><option value="all">Semua</option><option value="available" selected>Ada</option><option value="low">Low</option><option value="empty">Kosong</option></select>
+                <button id="btnExportAccPdf" class="btn-icon" title="PDF"><i class="ri-file-pdf-2-line"></i></button>
+            </div>
+            <div id="accStockTableBody" class="stock-accordion-list"></div>
+        </div>
+
+        <!-- Panel: Smart Inventory & Restock Alerts -->
+        <div id="admin-smart-inventory" class="admin-panel">
+            <div class="flex-between mb-md">
+                <h3 style="font-size:15px;"><i class="ri-lightbulb-flash-line" style="color:var(--primary-light);"></i> Stok Cerdas &amp; Alert</h3>
+            </div>
+
+            <!-- KPI Cards for Smart Inventory -->
+            <div class="form-grid cols-3 mb-md">
+                <div class="card" style="padding: 12px; background: var(--bg-dim); border-left: 4px solid var(--danger);">
+                    <div class="text-xs text-dim">Aksesoris Stok Kritis</div>
+                    <div class="text-lg font-bold" id="smartKpiLowAccCount" style="margin-top: 4px; color: var(--danger);">0</div>
+                </div>
+                <div class="card" style="padding: 12px; background: var(--bg-dim); border-left: 4px solid var(--warning);">
+                    <div class="text-xs text-dim">HP Mengendap (&gt; 30 Hari)</div>
+                    <div class="text-lg font-bold" id="smartKpiAgingDeviceCount" style="margin-top: 4px; color: var(--warning);">0</div>
+                </div>
+                <div class="card" style="padding: 12px; background: var(--bg-dim); border-left: 4px solid var(--success);">
+                    <div class="text-xs text-dim">Total Nilai Modal Mengendap</div>
+                    <div class="text-lg font-bold" id="smartKpiAgingValue" style="margin-top: 4px; color: var(--success);">Rp 0</div>
+                </div>
+            </div>
+
+            <!-- Section 1: Accessories Low Stock -->
+            <div class="card mb-md" style="padding: 16px;">
+                <div class="flex-between mb-sm">
+                    <h4 style="font-size:14px; font-weight:600;"><i class="ri-alert-line" style="color:var(--danger);"></i> Aksesoris Stok Rendah &amp; Kosong (Qty &le; 3)</h4>
+                    <span class="text-xs text-dim" id="smartLowAccText">Semua stok aman</span>
+                </div>
+                <div class="tbl-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Kode</th>
+                                <th>Nama Produk</th>
+                                <th>Stok Sisa</th>
+                                <th style="text-align: right;">Harga Jual</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="smartLowAccTableBody">
+                            <tr><td colspan="5" class="text-dim" style="text-align: center; padding: 20px;">Memuat data...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Section 2: Stock Aging for Devices -->
+            <div class="card mb-md" style="padding: 16px;">
+                <div class="flex-between mb-sm">
+                    <h4 style="font-size:14px; font-weight:600;"><i class="ri-time-line" style="color:var(--warning);"></i> Unit HP Mengendap (&gt; 30 Hari)</h4>
+                    <span class="text-xs text-dim" id="smartAgingDeviceText">Tidak ada unit mengendap</span>
+                </div>
+                <div class="tbl-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Kode Unit</th>
+                                <th>Unit HP</th>
+                                <th>Tanggal Masuk</th>
+                                <th>Umur Stok</th>
+                                <th style="text-align: right;">Harga Modal</th>
+                                <th style="text-align: right;">Harga Jual</th>
+                            </tr>
+                        </thead>
+                        <tbody id="smartAgingDeviceTableBody">
+                            <tr><td colspan="6" class="text-dim" style="text-align: center; padding: 20px;">Memuat data...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Section 3: Fast-Moving Items -->
+            <div class="card" style="padding: 16px;">
+                <div class="flex-between mb-sm">
+                    <h4 style="font-size:14px; font-weight:600;"><i class="ri-line-chart-line" style="color:var(--success);"></i> Barang Terlaris (30 Hari Terakhir)</h4>
+                    <span class="text-xs text-dim">Berdasarkan volume penjualan</span>
+                </div>
+                <div class="form-grid cols-2">
+                    <div>
+                        <h5 class="mb-sm text-sm" style="font-weight: 600;"><i class="ri-smartphone-line"></i> Top 5 Unit HP</h5>
+                        <div class="tbl-wrap">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Peringkat</th>
+                                        <th>Nama Unit</th>
+                                        <th style="text-align: center;">Kuantitas Terjual</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="smartTopDevicesTableBody">
+                                    <tr><td colspan="3" class="text-dim" style="text-align: center; padding: 10px;">Tidak ada data</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div>
+                        <h5 class="mb-sm text-sm" style="font-weight: 600;"><i class="ri-plug-line"></i> Top 5 Aksesoris</h5>
+                        <div class="tbl-wrap">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Peringkat</th>
+                                        <th>Nama Aksesoris</th>
+                                        <th style="text-align: center;">Kuantitas Terjual</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="smartTopAccTableBody">
+                                    <tr><td colspan="3" class="text-dim" style="text-align: center; padding: 10px;">Tidak ada data</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="admin-services" class="admin-panel">
+            <div class="mb-lg">
+                <div class="flex-between mb-md">
+                    <h3 style="font-size:15px;"><i class="ri-file-list-3-line" style="color:var(--primary-light);"></i> Nota Service</h3>
+                    <span class="text-xs text-dim">Teknisi dan modal hanya dikelola admin</span>
+                </div>
+                <div class="search-row">
+                    <input type="text" id="searchAdminService" placeholder="Cari kode, nama pelanggan, barang...">
+                </div>
+                <div id="serviceOrdersTableBody" class="stock-accordion-list"></div>
+            </div>
+        </div>
+
+        <!-- Panel: Kelola Teknisi -->
+        <div id="admin-technicians" class="admin-panel">
+            <div class="card" style="padding: 16px;">
+                <div id="adminTechniciansSection" class="mb-lg">
+                    <h4 style="font-size:14px;margin-bottom:10px;"><i class="ri-user-settings-line" style="color:var(--primary-light);"></i> Kelola Teknisi</h4>
+                    <form id="addNewTechnicianForm" class="flex gap-sm mb-md">
+                        <input type="text" id="newTechName" placeholder="Nama Teknisi" required style="flex:1;padding:8px 12px;font-size:13px;">
+                        <button type="submit" class="btn btn-sm btn-success" style="width:auto;"><i class="ri-add-line"></i></button>
+                    </form>
+                    <div class="tbl-wrap"><table><thead><tr><th>Nama</th><th></th></tr></thead><tbody id="techniciansTableBody"></tbody></table></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel: Lain-lain Catalog -->
+        <div id="admin-other" class="admin-panel">
+            <div class="flex-between mb-md">
+                <h3 style="font-size:15px;"><i class="ri-price-tag-3-line" style="color:var(--primary-light);"></i> Katalog Lain-lain</h3>
+                <button id="btnAddNewOther" class="btn btn-sm btn-primary" style="width:auto;"><i class="ri-add-line"></i> Tambah</button>
+            </div>
+            <p class="text-sm text-dim mb-md">Item bebas yang tidak masuk kategori unit, aksesoris, atau service.</p>
+
+            <div class="search-row">
+                <input type="text" id="searchAdminOther" placeholder="Cari nama item, keterangan...">
+            </div>
+
+            <div id="addOtherFormContainer" class="add-form-panel">
+                <h4><i class="ri-add-circle-line"></i> Tambah Item Lain-lain</h4>
+                <form id="newOtherCatalogForm">
+                    <div class="form-section-block">
+                        <div class="form-section-title"><i class="ri-price-tag-3-line"></i> Detail Item Lain-lain</div>
+                        <div class="field mb-sm"><label>Nama Item</label><input type="text" id="otherItemName" placeholder="Contoh: Biaya Pengiriman, Admin Transfer" required></div>
+                        <div class="form-grid cols-2">
+                            <div class="field"><label>Harga Jual Rp</label><input type="text" inputmode="numeric" id="otherItemSell" placeholder="Harga jual" required></div>
+                            <div class="field"><label>Keterangan (opsional)</label><input type="text" id="otherItemNote" placeholder="Catatan tambahan"></div>
+                        </div>
+                    </div>
+                    <div class="btn-row"><button type="button" id="btnCancelAddOther" class="btn btn-sm btn-ghost">Batal</button><button type="submit" class="btn btn-sm btn-success">Simpan</button></div>
+                </form>
+            </div>
+
+            <div class="tbl-wrap"><table><thead><tr><th>Kode</th><th>Nama Item</th><th>Harga Jual</th><th>Keterangan</th><th></th></tr></thead><tbody id="otherCatalogTableBody"></tbody></table></div>
+        </div>
+
+        <!-- Panel: Unified Sales Recap & Reports -->
+        <div id="admin-sales-recap" class="admin-panel">
+            <!-- Polished Header Box -->
+            <div class="recap-header-box">
+                <div class="flex-between mb-xs" style="flex-wrap: wrap; gap: 8px; align-items: center;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div style="width: 32px; height: 32px; border-radius: 8px; background: rgba(37,99,235,0.08); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 16px; border: 1px solid rgba(37,99,235,0.15);">
+                            <i class="ri-pie-chart-2-line"></i>
+                        </div>
+                        <div>
+                            <h3 style="font-size: 14.5px; font-weight: 700; margin: 0; color: #0f172a;">Pusat Rekap & Laporan Penjualan</h3>
+                            <span class="text-xxs text-dim">Audit omset, HPP, kontrol bonus gratis, laba riil, dan perolehan sales</span>
+                        </div>
+                    </div>
+                    <div class="flex gap-xs" style="flex-wrap: wrap; align-items: center;">
+                        <button type="button" id="btnExportRecapCurrentTabPdf" class="btn btn-sm btn-secondary-outline" style="width: auto; padding: 5px 10px; border-radius: 6px; font-size: 11.5px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; height: 28px;">
+                            <i class="ri-file-pdf-2-line" style="color: #ef4444; font-size: 13px;"></i> PDF Tab Ini
+                        </button>
+                        <button type="button" id="btnExportRecapFullPdf" class="btn btn-sm btn-primary" style="width: auto; padding: 5px 12px; border-radius: 6px; font-size: 11.5px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; height: 28px;">
+                            <i class="ri-printer-line" style="font-size: 13px;"></i> PDF Lengkap Toko
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Unified Filter Toolbar -->
+                <div class="recap-filter-toolbar">
+                    <div class="recap-filter-group">
+                        <label class="recap-filter-label"><i class="ri-calendar-event-line"></i> BULAN</label>
+                        <input type="month" id="recapMonthPicker" style="font-size: 12px; padding: 4px 8px; border-radius: 6px; width: 100%; border: 1px solid #cbd5e1; background: #ffffff; height: 30px;">
+                    </div>
+                    <div class="recap-filter-group">
+                        <label class="recap-filter-label"><i class="ri-user-star-line"></i> SALES</label>
+                        <select id="recapSalesFilter" style="font-size: 12px; padding: 4px 8px; border-radius: 6px; width: 100%; border: 1px solid #cbd5e1; background: #ffffff; height: 30px;">
+                            <option value="">-- Semua Pegawai / Sales --</option>
+                        </select>
+                    </div>
+                    <div class="recap-filter-group" style="flex: 1.4;">
+                        <label class="recap-filter-label"><i class="ri-search-line"></i> CARI</label>
+                        <input type="text" id="recapSearchInput" placeholder="Cari unit, nama pembeli, nota..." style="font-size: 12px; padding: 4px 8px; border-radius: 6px; width: 100%; border: 1px solid #cbd5e1; background: #ffffff; height: 30px;">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Executive Summary KPI Cards (Slim 4 Grid) -->
+            <div class="recap-kpi-grid">
+                <!-- 1. Omset -->
+                <div class="recap-kpi-card">
+                    <div class="recap-kpi-card-top">
+                        <span class="text-xxs text-dim font-bold" style="text-transform: uppercase; letter-spacing: 0.4px;">Total Omset</span>
+                        <div class="recap-kpi-icon-badge" style="background: rgba(37,99,235,0.08); color: #2563eb;"><i class="ri-line-chart-line"></i></div>
+                    </div>
+                    <div>
+                        <div class="recap-kpi-value" id="recapKpiRevenue">Rp 0</div>
+                        <div class="recap-kpi-sub" id="recapKpiTxCount"><i class="ri-shopping-cart-2-line"></i> 0 Transaksi</div>
+                    </div>
+                </div>
+
+                <!-- 2. HPP Modal -->
+                <div class="recap-kpi-card">
+                    <div class="recap-kpi-card-top">
+                        <span class="text-xxs text-dim font-bold" style="text-transform: uppercase; letter-spacing: 0.4px;">Total Modal (HPP)</span>
+                        <div class="recap-kpi-icon-badge" style="background: rgba(100,116,139,0.08); color: #64748b;"><i class="ri-inbox-archive-line"></i></div>
+                    </div>
+                    <div>
+                        <div class="recap-kpi-value" id="recapKpiCost">Rp 0</div>
+                        <div class="recap-kpi-sub"><i class="ri-stack-line"></i> Modal Barang</div>
+                    </div>
+                </div>
+
+                <!-- 3. Modal Bonus -->
+                <div class="recap-kpi-card">
+                    <div class="recap-kpi-card-top">
+                        <span class="text-xxs text-dim font-bold" style="text-transform: uppercase; letter-spacing: 0.4px; color: #b45309;">Modal Bonus</span>
+                        <div class="recap-kpi-icon-badge" style="background: rgba(245,158,11,0.1); color: #d97706;"><i class="ri-gift-2-line"></i></div>
+                    </div>
+                    <div>
+                        <div class="recap-kpi-value" id="recapKpiBonusCost" style="color: #d97706;">Rp 0</div>
+                        <div class="recap-kpi-sub" id="recapKpiBonusCount" style="color: #b45309;"><i class="ri-gift-line"></i> 0 Pcs gratis</div>
+                    </div>
+                </div>
+
+                <!-- 4. Laba Bersih Riil -->
+                <div class="recap-kpi-card" style="background: linear-gradient(180deg, #ffffff 0%, #f0fdf4 100%); border-color: #bbf7d0;">
+                    <div class="recap-kpi-card-top">
+                        <span class="text-xxs font-bold" style="text-transform: uppercase; letter-spacing: 0.4px; color: #047857;">Laba Bersih Riil</span>
+                        <div class="recap-kpi-icon-badge" style="background: rgba(16,185,129,0.12); color: #059669;"><i class="ri-wallet-3-line"></i></div>
+                    </div>
+                    <div>
+                        <div class="recap-kpi-value" id="recapKpiNetProfit" style="color: #059669;">Rp 0</div>
+                        <div class="recap-kpi-sub" id="recapKpiMarginPct" style="font-weight: 700; color: #047857;"><i class="ri-percent-line"></i> Margin: 0%</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 6 Thin-Bordered Category Menu Cards Navigation -->
+            <div id="recapCategoryCardsGrid" class="recap-cat-grid">
+                <!-- 1. Rekap Unit HP -->
+                <div class="recap-cat-card" data-recap-cat="units">
+                    <div>
+                        <div class="recap-cat-card-header">
+                            <div class="recap-cat-icon" style="background: rgba(37, 99, 235, 0.1); color: #2563eb;">
+                                <i class="ri-smartphone-line"></i>
+                            </div>
+                            <span class="recap-cat-badge" id="recapBadgeUnitsCount">0 Unit</span>
+                        </div>
+                        <div class="recap-cat-title">Rekap Unit HP</div>
+                        <div class="recap-cat-desc">iPhone & Android, modal, harga jual, dan laba</div>
+                    </div>
+                    <div class="recap-cat-footer">
+                        <span>Buka Rekap Unit</span>
+                        <i class="ri-arrow-right-line"></i>
+                    </div>
+                </div>
+
+                <!-- 2. Rekap Aksesoris & Bonus -->
+                <div class="recap-cat-card" data-recap-cat="accessories">
+                    <div>
+                        <div class="recap-cat-card-header">
+                            <div class="recap-cat-icon" style="background: rgba(139, 92, 246, 0.1); color: #8b5cf6;">
+                                <i class="ri-plug-line"></i>
+                            </div>
+                            <span class="recap-cat-badge" id="recapBadgeAccCount">0 Aksesoris</span>
+                        </div>
+                        <div class="recap-cat-title">Rekap Aksesoris & Bonus</div>
+                        <div class="recap-cat-desc">Aksesoris terjual dan pelacakan bonus unit</div>
+                    </div>
+                    <div class="recap-cat-footer">
+                        <span style="color: #8b5cf6;">Buka Aksesoris</span>
+                        <i class="ri-arrow-right-line" style="color: #8b5cf6;"></i>
+                    </div>
+                </div>
+
+                <!-- 3. Rekap Jasa Servis -->
+                <div class="recap-cat-card" data-recap-cat="services">
+                    <div>
+                        <div class="recap-cat-card-header">
+                            <div class="recap-cat-icon" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b;">
+                                <i class="ri-tools-line"></i>
+                            </div>
+                            <span class="recap-cat-badge" id="recapBadgeServicesCount">0 Servis</span>
+                        </div>
+                        <div class="recap-cat-title">Rekap Jasa Servis</div>
+                        <div class="recap-cat-desc">Servis selesai/cancel, biaya teknisi, dan laba</div>
+                    </div>
+                    <div class="recap-cat-footer">
+                        <span style="color: #d97706;">Buka Servis</span>
+                        <i class="ri-arrow-right-line" style="color: #d97706;"></i>
+                    </div>
+                </div>
+
+                <!-- 4. Rekap Order Jasa (Khusus iCloud, IMEI, dsb) -->
+                <div class="recap-cat-card" data-recap-cat="order-jasa">
+                    <div>
+                        <div class="recap-cat-card-header">
+                            <div class="recap-cat-icon" style="background: rgba(2, 132, 199, 0.1); color: #0284c7;">
+                                <i class="ri-shield-keyhole-line"></i>
+                            </div>
+                            <span class="recap-cat-badge" id="recapBadgeOrderJasaCount">0 Order</span>
+                        </div>
+                        <div class="recap-cat-title">Rekap Order Jasa</div>
+                        <div class="recap-cat-desc">Jasa iCloud, IMEI, unlock, dan sistem</div>
+                    </div>
+                    <div class="recap-cat-footer">
+                        <span style="color: #0284c7;">Buka Order Jasa</span>
+                        <i class="ri-arrow-right-line" style="color: #0284c7;"></i>
+                    </div>
+                </div>
+
+                <!-- 5. Rekap Lain-lain (Barang Custom/Manual) -->
+                <div class="recap-cat-card" data-recap-cat="other">
+                    <div>
+                        <div class="recap-cat-card-header">
+                            <div class="recap-cat-icon" style="background: rgba(100, 116, 139, 0.1); color: #64748b;">
+                                <i class="ri-price-tag-3-line"></i>
+                            </div>
+                            <span class="recap-cat-badge" id="recapBadgeOtherCount">0 Item</span>
+                        </div>
+                        <div class="recap-cat-title">Rekap Lain-lain</div>
+                        <div class="recap-cat-desc">Item umum, merchandise, transaksi manual</div>
+                    </div>
+                    <div class="recap-cat-footer">
+                        <span style="color: #64748b;">Buka Lain-lain</span>
+                        <i class="ri-arrow-right-line" style="color: #64748b;"></i>
+                    </div>
+                </div>
+
+                <!-- 6. Kinerja & Perolehan Sales -->
+                <div class="recap-cat-card" data-recap-cat="sales-perf">
+                    <div>
+                        <div class="recap-cat-card-header">
+                            <div class="recap-cat-icon" style="background: rgba(16, 185, 129, 0.1); color: #10b981;">
+                                <i class="ri-trophy-line"></i>
+                            </div>
+                            <span class="recap-cat-badge" id="recapBadgeSalesCount">0 Sales</span>
+                        </div>
+                        <div class="recap-cat-title">Kinerja & Sales</div>
+                        <div class="recap-cat-desc">Leaderboard unit & kontribusi laba pegawai</div>
+                    </div>
+                    <div class="recap-cat-footer">
+                        <span style="color: #10b981;">Buka Leaderboard</span>
+                        <i class="ri-arrow-right-line" style="color: #10b981;"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Category Drill-Down View (Minimalist List) -->
+            <div id="recapActiveCategorySection" style="display: none;">
+                <div class="flex-between mb-sm" style="border-bottom: 1px solid var(--border-color); padding-bottom: 10px; align-items: center;">
+                    <button type="button" id="btnBackToRecapCategories" class="btn btn-sm btn-ghost" style="width: auto; padding: 6px 12px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
+                        <i class="ri-arrow-left-line"></i> Kembali ke Pilihan Kategori
+                    </button>
+                    <div id="recapActiveCategoryTitle" style="font-size: 14px; font-weight: 700; color: #0f172a;"></div>
+                </div>
+
+                <!-- Category Content 1: Unit HP -->
+                <div id="recapContentUnits" class="recap-cat-content" style="display: none;">
+                    <div class="recap-item-list" id="recapListUnits"></div>
+                </div>
+
+                <!-- Category Content 2: Aksesoris & Bonus -->
+                <div id="recapContentAccessories" class="recap-cat-content" style="display: none;">
+                    <div class="flex gap-sm mb-sm" style="align-items: center;">
+                        <button type="button" id="btnRecapAccSold" class="btn btn-sm btn-secondary" style="width: auto; padding: 5px 12px; border-radius: 6px; font-size: 11.5px; font-weight: 600;">
+                            Aksesoris Terjual (Berbayar)
+                        </button>
+                        <button type="button" id="btnRecapAccBonus" class="btn btn-sm btn-ghost" style="width: auto; padding: 5px 12px; border-radius: 6px; font-size: 11.5px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px;">
+                            <i class="ri-gift-line" style="color: #d97706;"></i> Bonus Aksesoris (Keluar untuk Unit)
+                        </button>
+                    </div>
+                    <div class="recap-item-list" id="recapListAccSold"></div>
+                    <div class="recap-item-list" id="recapListAccBonus" style="display: none;"></div>
+                </div>
+
+                <!-- Category Content 3: Jasa Servis -->
+                <div id="recapContentServices" class="recap-cat-content" style="display: none;">
+                    <div class="recap-item-list" id="recapListServices"></div>
+                </div>
+
+                <!-- Category Content 4: Order Jasa -->
+                <div id="recapContentOrderJasa" class="recap-cat-content" style="display: none;">
+                    <div class="recap-item-list" id="recapListOrderJasa"></div>
+                </div>
+
+                <!-- Category Content 5: Lain-lain -->
+                <div id="recapContentOther" class="recap-cat-content" style="display: none;">
+                    <div class="recap-item-list" id="recapListOther"></div>
+                </div>
+
+                <!-- Category Content 6: Kinerja Sales -->
+                <div id="recapContentSalesPerf" class="recap-cat-content" style="display: none;">
+                    <div class="recap-item-list" id="recapListSalesPerf"></div>
+                </div>
+            </div>
+
+            <!-- Modal Pop-up Rincian Transaksi Lengkap (Click-to-Detail) - High-End Neat & Minimalist -->
+            <div id="modalRecapDetail" class="modal-bg" style="display: none; align-items: center; justify-content: center; z-index: 1200;">
+                <div class="modal" style="max-width: 520px; width: 95%; max-height: 90vh; overflow-y: auto; padding: 16px; border-radius: 14px; border: 1px solid #e2e8f0; box-shadow: 0 10px 30px rgba(0,0,0,0.12);">
+                    <!-- Modal Header -->
+                    <div class="flex-between mb-xs" style="border-bottom: 1px solid #f1f5f9; padding-bottom: 8px; align-items: flex-start;">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <div id="modalRecapDetailIcon" style="width: 34px; height: 34px; border-radius: 8px; background: rgba(37,99,235,0.08); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0;">
+                                <i class="ri-smartphone-line"></i>
+                            </div>
+                            <div>
+                                <h3 style="font-size: 14px; font-weight: 700; margin: 0; color: #0f172a; line-height: 1.3;" id="modalRecapDetailTitle">Rincian Transaksi</h3>
+                                <div style="font-size: 11px; color: #64748b; margin-top: 2px;" id="modalRecapDetailSubtitle">Detail data transaksi toko</div>
+                            </div>
+                        </div>
+                        <button type="button" id="btnCloseRecapDetail" class="btn btn-sm btn-ghost" style="width: 28px; height: 28px; border-radius: 50%; padding: 0; display: flex; align-items: center; justify-content: center; flex-shrink: 0;"><i class="ri-close-line" style="font-size: 18px;"></i></button>
+                    </div>
+
+                    <!-- Top Stat Hero Summary Banner -->
+                    <div id="modalRecapDetailStatBanner" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <span style="font-size: 10px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.4px;">Harga Jual Transaksi</span>
+                            <div id="modalRecapDetailHeroPrice" style="font-size: 15px; font-weight: 800; color: #0f172a; font-family: monospace; line-height: 1.2;">Rp 0</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <span style="font-size: 10px; font-weight: 700; color: #065f46; text-transform: uppercase; letter-spacing: 0.4px;">Laba Bersih Riil Toko</span>
+                            <div id="modalRecapDetailHeroProfit" style="font-size: 13px; font-weight: 800; color: #059669; font-family: monospace; background: #ecfdf5; border: 1px solid #a7f3d0; padding: 2px 8px; border-radius: 6px; display: inline-block; margin-top: 2px;">Rp 0 (0%)</div>
+                        </div>
+                    </div>
+
+                    <!-- 4 Structured Detail Boxes -->
+                    <div class="recap-detail-grid mb-xs">
+                        <!-- Box 1: Data Item / Unit -->
+                        <div class="recap-detail-box">
+                            <div class="recap-detail-box-title"><i class="ri-smartphone-line"></i> Item & Perangkat</div>
+                            <div id="modalRecapDetailItemContent"></div>
+                        </div>
+
+                        <!-- Box 2: Finansial & Laba Riil -->
+                        <div class="recap-detail-box">
+                            <div class="recap-detail-box-title"><i class="ri-money-dollar-circle-line"></i> Transparansi Finansial</div>
+                            <div id="modalRecapDetailFinancialContent"></div>
+                        </div>
+
+                        <!-- Box 3: Pembayaran & Leasing -->
+                        <div class="recap-detail-box">
+                            <div class="recap-detail-box-title"><i class="ri-bank-card-line"></i> Pembayaran</div>
+                            <div id="modalRecapDetailPaymentContent"></div>
+                        </div>
+
+                        <!-- Box 4: Pelanggan & Sales -->
+                        <div class="recap-detail-box">
+                            <div class="recap-detail-box-title"><i class="ri-user-smile-line"></i> Pelanggan & Sales</div>
+                            <div id="modalRecapDetailStaffContent"></div>
+                        </div>
+                    </div>
+
+                    <!-- Bonus Accessories Box (if any) -->
+                    <div id="modalRecapDetailBonusBox" class="recap-detail-box mb-xs" style="display: none; background: #fffbeb; border-color: #fef3c7; margin-top: 8px;">
+                        <div class="recap-detail-box-title" style="color: #b45309; border-color: #fde68a;"><i class="ri-gift-line"></i> Bonus Aksesoris yang Diberikan Gratis</div>
+                        <div id="modalRecapDetailBonusList" style="font-size: 11px; color: #78350f;"></div>
+                    </div>
+
+                    <div style="text-align: right; margin-top: 10px;">
+                        <button type="button" id="btnOkRecapDetail" class="btn btn-primary btn-sm" style="width: auto; padding: 6px 18px; border-radius: 6px; font-weight: 600; font-size: 12px;">Tutup Rincian</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Panel: Monthly Reports -->
+        <div id="admin-monthly" class="admin-panel">
+            <div class="flex-between mb-md" style="flex-wrap: wrap; gap: 12px; align-items: center;">
+                <h3 style="font-size:15px; display:inline-flex; align-items:center; gap:8px;">
+                    <i class="ri-calendar-2-line" style="color:var(--primary-light);"></i>
+                    <span>Laporan Bulanan</span>
+                </h3>
+                <div class="flex gap-sm" style="align-items:center; flex-wrap: wrap;">
+                    <input type="month" id="monthlyDetailMonthPicker" style="padding: 6px 10px; font-size: 13px; border-radius: 6px; border: 1px solid var(--border);">
+                    <button id="btnSyncMonthlySupabase" class="btn btn-sm btn-secondary-outline" style="width:auto; display:inline-flex; align-items:center; gap:4px;" title="Tarik data terbaru dari Supabase"><i class="ri-refresh-line"></i> Sinkronisasi Supabase</button>
+                    <button id="btnExportMonthlyPdf" class="btn btn-sm btn-primary" style="width:auto; display:inline-flex; align-items:center; gap:4px;"><i class="ri-file-pdf-2-line"></i> Ekspor PDF</button>
+                </div>
+            </div>
+
+            <!-- Monthly KPI Cards -->
+            <div class="form-grid cols-4 mb-md">
+                <div class="card" style="padding: 12px; background: var(--bg-dim); border-left: 4px solid var(--primary);">
+                    <div class="text-xs text-dim">Total Pendapatan</div>
+                    <div class="text-lg font-bold" id="monthlyDetailKpiRevenue" style="margin-top: 4px; color: var(--text);">Rp 0</div>
+                </div>
+                <div class="card" style="padding: 12px; background: var(--bg-dim); border-left: 4px solid var(--text-dim);">
+                    <div class="text-xs text-dim">Total Modal</div>
+                    <div class="text-lg font-bold" id="monthlyDetailKpiCost" style="margin-top: 4px; color: var(--text);">Rp 0</div>
+                </div>
+                <div class="card" style="padding: 12px; background: var(--bg-dim); border-left: 4px solid var(--success);">
+                    <div class="text-xs text-dim">Keuntungan Bersih</div>
+                    <div class="text-lg font-bold" id="monthlyDetailKpiProfit" style="margin-top: 4px; color: var(--success);">Rp 0</div>
+                </div>
+                <div class="card" style="padding: 12px; background: var(--bg-dim); border-left: 4px solid var(--warning);">
+                    <div class="text-xs text-dim">Total Transaksi</div>
+                    <div class="text-lg font-bold" id="monthlyDetailKpiTxCount" style="margin-top: 4px; color: var(--text);">0</div>
+                </div>
+            </div>
+
+            <!-- Sub-tabs for Monthly Details -->
+            <div class="flex gap-sm mb-md" style="border-bottom: 1px solid var(--border); padding-bottom: 6px; flex-shrink: 0; overflow-x: auto; white-space: nowrap;">
+                <button type="button" id="btnSubTabMonthlyAll" class="btn btn-sm btn-primary sub-monthly-tab" data-tab="all" style="padding: 7px 14px; width: auto; display: inline-block;">Semua Transaksi</button>
+                <button type="button" id="btnSubTabMonthlyUnit" class="btn btn-sm btn-ghost sub-monthly-tab" data-tab="unit" style="padding: 7px 14px; width: auto; display: inline-block;">Laporan Penjualan Unit</button>
+                <button type="button" id="btnSubTabMonthlyAksesoris" class="btn btn-sm btn-ghost sub-monthly-tab" data-tab="aksesoris" style="padding: 7px 14px; width: auto; display: inline-block;">Laporan Penjualan Aksesoris</button>
+                <button type="button" id="btnSubTabMonthlyOrderJasa" class="btn btn-sm btn-ghost sub-monthly-tab" data-tab="order-jasa" style="padding: 7px 14px; width: auto; display: inline-block;">Laporan Penjualan Order Jasa</button>
+                <button type="button" id="btnSubTabMonthlyServis" class="btn btn-sm btn-ghost sub-monthly-tab" data-tab="servis" style="padding: 7px 14px; width: auto; display: inline-block;">Laporan Servis</button>
+                <button type="button" id="btnSubTabMonthlyLain" class="btn btn-sm btn-ghost sub-monthly-tab" data-tab="lain" style="padding: 7px 14px; width: auto; display: inline-block;">Laporan Penjualan Lain-lain</button>
+                <button type="button" id="btnSubTabMonthlyBeban" class="btn btn-sm btn-ghost sub-monthly-tab" data-tab="beban" style="padding: 7px 14px; width: auto; display: inline-block;">Beban Operasional</button>
+            </div>
+
+            <!-- ── Section: Semua Transaksi ────────────────── -->
+            <div id="monthlyDetailAllSection" class="monthly-sub-section active">
+                <div class="search-row mb-md">
+                    <input type="text" id="searchMonthlyDetail" placeholder="Cari nama item, kode, sales...">
+                </div>
+                <div class="tbl-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Tanggal</th>
+                                <th>Shift</th>
+                                <th>Kategori</th>
+                                <th>Kode</th>
+                                <th>Nama Item</th>
+                                <th style="text-align: right;">Modal</th>
+                                <th style="text-align: right;">Jual</th>
+                                <th style="text-align: right;">Untung</th>
+                                <th>Metode</th>
+                                <th>Sales/Teknisi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="monthlyDetailTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ── Section: Laporan Penjualan Aksesoris ──────────── -->
+            <div id="monthlyDetailAksesorisSection" class="monthly-sub-section" style="display:none;">
+                <div class="monthly-empty-state">
+                    <i class="ri-plug-line"></i>
+                    <h4>Laporan Penjualan Aksesoris</h4>
+                    <p>Rekap penjualan semua item aksesoris pada bulan terpilih.</p>
+                </div>
+                <div class="search-row mb-md">
+                    <input type="text" id="searchMonthlyAksesoris" placeholder="Cari nama aksesoris, kode, sales...">
+                </div>
+                <div class="tbl-wrap">
+                    <table>
+                        <thead><tr>
+                            <th>No</th><th>Tanggal</th><th>Kode</th><th>Nama Aksesoris</th>
+                            <th>Brand</th><th>Qty</th><th style="text-align:right;">Modal/unit</th>
+                            <th style="text-align:right;">Jual/unit</th><th style="text-align:right;">Total Jual</th>
+                            <th style="text-align:right;">Untung</th><th>Metode</th><th>Sales</th>
+                        </tr></thead>
+                        <tbody id="monthlyAksesorisTableBody"><tr><td colspan="12" class="text-center text-dim" style="padding:24px;">Belum ada data penjualan aksesoris bulan ini.</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ── Section: Laporan Penjualan Order Jasa ──────────── -->
+            <div id="monthlyDetailOrderJasaSection" class="monthly-sub-section" style="display:none;">
+                <div class="monthly-empty-state">
+                    <i class="ri-file-list-2-line"></i>
+                    <h4>Laporan Penjualan Order Jasa</h4>
+                    <p>Rekap semua transaksi penjualan dengan kategori Order Jasa / IMEI.</p>
+                </div>
+                <div class="search-row mb-md">
+                    <input type="text" id="searchMonthlyOrderJasa" placeholder="Cari kode, nama pelanggan...">
+                </div>
+                <div class="tbl-wrap">
+                    <table>
+                        <thead><tr>
+                            <th>No</th><th>Tanggal</th><th>Kode Order</th><th>Nama Pelanggan</th>
+                            <th>Item</th><th style="text-align:right;">Modal</th>
+                            <th style="text-align:right;">Nominal</th><th style="text-align:right;">Untung</th>
+                            <th>Metode</th><th>Sales</th>
+                        </tr></thead>
+                        <tbody id="monthlyOrderJasaTableBody"><tr><td colspan="10" class="text-center text-dim" style="padding:24px;">Belum ada data Order Jasa bulan ini.</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ── Section: Laporan Servis ──────────────────────── -->
+            <div id="monthlyDetailServisSection" class="monthly-sub-section" style="display:none;">
+                <div class="monthly-empty-state">
+                    <i class="ri-tools-line"></i>
+                    <h4>Laporan Servis</h4>
+                    <p>Rekap nota service masuk, keluar, dan cancel pada bulan terpilih.</p>
+                </div>
+                <div class="search-row mb-md">
+                    <input type="text" id="searchMonthlyServis" placeholder="Cari kode nota, nama pelanggan, teknisi...">
+                </div>
+                <div class="tbl-wrap">
+                    <table>
+                        <thead><tr>
+                            <th>No</th><th>Kode</th><th>Tgl Masuk</th><th>Tgl Proses</th>
+                            <th>Nama Pelanggan</th><th>Barang</th><th>Keluhan</th>
+                            <th>Teknisi</th><th style="text-align:right;">Nominal Bayar</th>
+                            <th style="text-align:right;">Modal Teknisi</th><th>Status</th><th>Status Bayar</th>
+                        </tr></thead>
+                        <tbody id="monthlyServisTableBody"><tr><td colspan="12" class="text-center text-dim" style="padding:24px;">Belum ada data servis bulan ini.</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ── Section: Laporan Penjualan Lain-lain ─────────── -->
+            <div id="monthlyDetailLainSection" class="monthly-sub-section" style="display:none;">
+                <div class="monthly-empty-state">
+                    <i class="ri-price-tag-3-line"></i>
+                    <h4>Laporan Penjualan Lain-lain</h4>
+                    <p>Rekap penjualan item dari kategori Lain-lain bulan ini.</p>
+                </div>
+                <div class="search-row mb-md">
+                    <input type="text" id="searchMonthlyLain" placeholder="Cari nama item, kode, sales...">
+                </div>
+                <div class="tbl-wrap">
+                    <table>
+                        <thead><tr>
+                            <th>No</th><th>Tanggal</th><th>Kode</th><th>Nama Item</th>
+                            <th>Qty</th><th style="text-align:right;">Modal</th>
+                            <th style="text-align:right;">Jual</th><th style="text-align:right;">Untung</th>
+                            <th>Metode</th><th>Sales</th>
+                        </tr></thead>
+                        <tbody id="monthlyLainTableBody"><tr><td colspan="10" class="text-center text-dim" style="padding:24px;">Belum ada data Lain-lain bulan ini.</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ── Section: Beban Operasional (dipindah ke sini) ── -->
+            <div id="monthlyDetailBebanSection" class="monthly-sub-section" style="display:none;">
+                <div class="monthly-empty-state">
+                    <i class="ri-money-dollar-circle-line"></i>
+                    <h4>Beban Operasional</h4>
+                    <p>Catatan pengeluaran &amp; biaya operasional toko bulan ini.</p>
+                </div>
+                <!-- The existing Beban Operasional form/table will be rendered here by JS -->
+                <div id="monthlyBebanMount"></div>
+            </div>
+
+            <!-- Section 2: Laporan Penjualan Unit -->
+            <div id="monthlyDetailUnitSection" style="display: none;">
+                <div class="search-row mb-md">
+                    <input type="text" id="searchMonthlyUnitDetail" placeholder="Cari model, kode unit, pembeli, sales...">
+                </div>
+
+                <div class="tbl-wrap" style="overflow-x: auto;">
+                    <table id="monthlyDetailUnitTable" style="min-width: 1800px; border-collapse: collapse; border: 1px solid var(--border-color, #e2e8f0);">
+                        <thead style="background: var(--bg-dim);">
+                            <tr style="background: var(--bg-dim); border-bottom: 2px solid var(--border-color, #e2e8f0);">
+                                <th rowspan="3" style="text-align: center; border: 1px solid var(--border-color, #e2e8f0); vertical-align: middle; padding: 8px; font-weight: bold; font-size: 12px;">NO</th>
+                                <th colspan="8" style="text-align: center; border: 1px solid var(--border-color, #e2e8f0); padding: 8px; font-weight: bold; font-size: 12px;">DETAIL UNIT</th>
+                                <th colspan="5" style="text-align: center; border: 1px solid var(--border-color, #e2e8f0); padding: 8px; font-weight: bold; font-size: 12px;">BONUS AKSESORIS</th>
+                                <th rowspan="2" colspan="2" style="text-align: center; border: 1px solid var(--border-color, #e2e8f0); vertical-align: middle; padding: 8px; font-weight: bold; font-size: 12px;">PELANGGAN & SALES</th>
+                                <th rowspan="2" style="text-align: center; border: 1px solid var(--border-color, #e2e8f0); vertical-align: middle; padding: 8px; font-weight: bold; font-size: 12px;">STATUS PEROLEHAN</th>
+                                <th rowspan="2" colspan="2" style="text-align: center; border: 1px solid var(--border-color, #e2e8f0); vertical-align: middle; padding: 8px; font-weight: bold; font-size: 12px;">TANGGAL</th>
+                                <th colspan="4" style="text-align: center; border: 1px solid var(--border-color, #e2e8f0); padding: 8px; font-weight: bold; font-size: 12px;">METODE PEMBAYARAN</th>
+                                <th rowspan="3" style="text-align: right; border: 1px solid var(--border-color, #e2e8f0); vertical-align: middle; padding: 8px; font-weight: bold; font-size: 12px;">LABA</th>
+                            </tr>
+                            <tr style="background: var(--bg-dim); border-bottom: 2px solid var(--border-color, #e2e8f0);">
+                                <th rowspan="2" style="border: 1px solid var(--border-color, #e2e8f0); vertical-align: middle; padding: 8px; font-weight: bold; font-size: 11px;">MODEL</th>
+                                <th rowspan="2" style="border: 1px solid var(--border-color, #e2e8f0); vertical-align: middle; padding: 8px; font-weight: bold; font-size: 11px;">KODE UNIT</th>
+                                <th rowspan="2" style="border: 1px solid var(--border-color, #e2e8f0); vertical-align: middle; padding: 8px; font-weight: bold; font-size: 11px;">STORAGE</th>
+                                <th rowspan="2" style="border: 1px solid var(--border-color, #e2e8f0); vertical-align: middle; padding: 8px; font-weight: bold; font-size: 11px;">WARNA</th>
+                                <th rowspan="2" style="border: 1px solid var(--border-color, #e2e8f0); vertical-align: middle; padding: 8px; font-weight: bold; font-size: 11px;">KONDISI</th>
+                                <th rowspan="2" style="border: 1px solid var(--border-color, #e2e8f0); vertical-align: middle; padding: 8px; font-weight: bold; font-size: 11px;">GARANSI</th>
+                                <th rowspan="2" style="text-align: right; border: 1px solid var(--border-color, #e2e8f0); vertical-align: middle; padding: 8px; font-weight: bold; font-size: 11px;">NILAI MODAL</th>
+                                <th rowspan="2" style="text-align: right; border: 1px solid var(--border-color, #e2e8f0); vertical-align: middle; padding: 8px; font-weight: bold; font-size: 11px;">NILAI JUAL</th>
+                                
+                                <th style="border: 1px solid var(--border-color, #e2e8f0); padding: 6px; font-weight: bold; font-size: 11px;">KATEGORI</th>
+                                <th style="border: 1px solid var(--border-color, #e2e8f0); padding: 6px; font-weight: bold; font-size: 11px;">BRAND</th>
+                                <th style="border: 1px solid var(--border-color, #e2e8f0); padding: 6px; font-weight: bold; font-size: 11px;">DETAIL AKSESORIS</th>
+                                <th style="text-align: right; border: 1px solid var(--border-color, #e2e8f0); padding: 6px; font-weight: bold; font-size: 11px;">MODAL AKSESORIS</th>
+                                <th style="text-align: center; border: 1px solid var(--border-color, #e2e8f0); padding: 6px; font-weight: bold; font-size: 11px;">JUMLAH</th>
+                                
+                                <th style="text-align: right; border: 1px solid var(--border-color, #e2e8f0); padding: 6px; font-weight: bold; font-size: 11px;">CASH</th>
+                                <th style="text-align: right; border: 1px solid var(--border-color, #e2e8f0); padding: 6px; font-weight: bold; font-size: 11px;">TRANSFER</th>
+                                <th style="text-align: right; border: 1px solid var(--border-color, #e2e8f0); padding: 6px; font-weight: bold; font-size: 11px;">KREDIT</th>
+                                <th style="border: 1px solid var(--border-color, #e2e8f0); padding: 6px; font-weight: bold; font-size: 11px;">SPLIT INFO</th>
+                            </tr>
+                            <tr style="background: var(--bg-dim); border-bottom: 2px solid var(--border-color, #e2e8f0);">
+                                <th style="border: 1px solid var(--border-color, #e2e8f0); font-size: 10px; padding: 4px; font-weight: normal; color: var(--text-dim);">J:KATEGORI</th>
+                                <th style="border: 1px solid var(--border-color, #e2e8f0); font-size: 10px; padding: 4px; font-weight: normal; color: var(--text-dim);">K:BRAND</th>
+                                <th style="border: 1px solid var(--border-color, #e2e8f0); font-size: 10px; padding: 4px; font-weight: normal; color: var(--text-dim);">L:DETAIL AKSESORIS</th>
+                                <th style="text-align: right; border: 1px solid var(--border-color, #e2e8f0); font-size: 10px; padding: 4px; font-weight: normal; color: var(--text-dim);">M:NILAI MODAL</th>
+                                <th style="text-align: center; border: 1px solid var(--border-color, #e2e8f0); font-size: 10px; padding: 4px; font-weight: normal; color: var(--text-dim);">N:JUMLAH</th>
+                                
+                                <th style="border: 1px solid var(--border-color, #e2e8f0); font-size: 10px; padding: 4px; font-weight: normal; color: var(--text-dim);">O:NAMA PEMBELI</th>
+                                <th style="border: 1px solid var(--border-color, #e2e8f0); font-size: 10px; padding: 4px; font-weight: normal; color: var(--text-dim);">P:NAMA PENJUAL</th>
+                                <th style="border: 1px solid var(--border-color, #e2e8f0); font-size: 10px; padding: 4px; font-weight: normal; color: var(--text-dim);">Q:STATUS PEROLEHAN</th>
+                                
+                                <th style="border: 1px solid var(--border-color, #e2e8f0); font-size: 10px; padding: 4px; font-weight: normal; color: var(--text-dim);">R:TANGGAL BELI</th>
+                                <th style="border: 1px solid var(--border-color, #e2e8f0); font-size: 10px; padding: 4px; font-weight: normal; color: var(--text-dim);">S:TANGGAL JUAL</th>
+                                
+                                <th style="text-align: right; border: 1px solid var(--border-color, #e2e8f0); font-size: 10px; padding: 4px; font-weight: normal; color: var(--text-dim);">T:CASH</th>
+                                <th style="text-align: right; border: 1px solid var(--border-color, #e2e8f0); font-size: 10px; padding: 4px; font-weight: normal; color: var(--text-dim);">U:TRANSFER</th>
+                                <th style="text-align: right; border: 1px solid var(--border-color, #e2e8f0); font-size: 10px; padding: 4px; font-weight: normal; color: var(--text-dim);">V:KREDIT</th>
+                                <th style="border: 1px solid var(--border-color, #e2e8f0); font-size: 10px; padding: 4px; font-weight: normal; color: var(--text-dim);">W:SPLIT</th>
+                            </tr>
+                        </thead>
+                        <tbody id="monthlyDetailUnitTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel: Beban Operasional -->
+        <div id="admin-expenses" class="admin-panel">
+
+                <!-- Header row -->
+                <div class="flex-between mb-md">
+                    <h3 style="font-size:15px;display:inline-flex;align-items:center;gap:8px;">
+                        <i class="ri-money-dollar-circle-line" style="color:var(--warning);"></i>
+                        Beban Operasional
+                    </h3>
+                    <div class="flex gap-sm" style="align-items:center;">
+                        <input type="month" id="expenseMonthSelect" style="padding:6px 10px;font-size:13px;border-radius:6px;border:1px solid var(--border);">
+                        <button id="btnShowExpenseForm" class="btn btn-sm btn-primary" style="width:auto;display:inline-flex;align-items:center;gap:4px;">
+                            <i class="ri-add-line"></i> Tambah Beban
+                        </button>
+                        <button id="btnExportExpensesPdf" class="btn btn-sm btn-secondary-outline" style="width:auto;display:inline-flex;align-items:center;gap:4px;">
+                            <i class="ri-file-pdf-2-line"></i> Ekspor PDF
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Inline Add Expense Form -->
+                <div id="expenseFormContainer" class="collapsible-form" style="margin-bottom:16px;">
+                    <form id="formAddExpense">
+                        <div class="form-grid cols-2" style="gap:12px;">
+                            <div class="field">
+                                <label>Kategori <span class="required">*</span></label>
+                                <select id="expenseCategory" required>
+                                    <option value="">-- Pilih Kategori --</option>
+                                    <option value="gaji">Gaji Karyawan</option>
+                                    <option value="sewa">Sewa Toko</option>
+                                    <option value="listrik">Listrik &amp; Utilitas</option>
+                                    <option value="internet">Internet &amp; Komunikasi</option>
+                                    <option value="transportasi">Transportasi</option>
+                                    <option value="pembelian">Pembelian Perlengkapan</option>
+                                    <option value="iklan">Biaya Iklan &amp; Promosi</option>
+                                    <option value="lainnya">Lain-lain</option>
+                                </select>
+                            </div>
+                            <div class="field" id="expenseEmployeeContainer" style="display: none;">
+                                <label>Penerima Gaji (Pegawai) <span class="required">*</span></label>
+                                <select id="expenseEmployeeSelect">
+                                    <option value="">-- Pilih Pegawai --</option>
+                                </select>
+                            </div>
+                            <div class="field">
+                                <label>Tanggal <span class="required">*</span></label>
+                                <input type="date" id="expenseDate" required>
+                            </div>
+                            <div class="field">
+                                <label>Nominal (Rp) <span class="required">*</span></label>
+                                <input type="text" inputmode="numeric" id="expenseAmount" placeholder="Contoh: 3.000.000" required>
+                            </div>
+                            <div class="field">
+                                <label>Keterangan</label>
+                                <input type="text" id="expenseDescription" placeholder="Keterangan opsional...">
+                            </div>
+                        </div>
+                        <div class="flex gap-sm" style="margin-top:12px;justify-content:flex-end;">
+                            <button type="button" id="btnCancelExpense" class="btn btn-sm btn-ghost" style="width:auto;">Batal</button>
+                            <button type="submit" class="btn btn-sm btn-primary" style="width:auto;display:inline-flex;align-items:center;gap:4px;">
+                                <i class="ri-save-line"></i> Simpan Beban
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- KPI Cards -->
+                <div class="form-grid cols-4 mb-md">
+                    <div class="card" style="padding:12px;background:var(--bg-dim);border-left:4px solid var(--danger);">
+                        <div class="text-xs text-dim">Total Beban Operasional</div>
+                        <div class="text-lg font-bold" id="expenseKpiBeban" style="margin-top:4px;color:var(--danger);">Rp 0</div>
+                    </div>
+                    <div class="card" style="padding:12px;background:var(--bg-dim);border-left:4px solid var(--primary);">
+                        <div class="text-xs text-dim">Total Pendapatan</div>
+                        <div class="text-lg font-bold" id="expenseKpiRevenue" style="margin-top:4px;color:var(--text);">Rp 0</div>
+                    </div>
+                    <div class="card" style="padding:12px;background:var(--bg-dim);border-left:4px solid var(--warning);">
+                        <div class="text-xs text-dim">Laba Kotor (sebelum beban)</div>
+                        <div class="text-lg font-bold" id="expenseKpiKotor" style="margin-top:4px;color:var(--text);">Rp 0</div>
+                    </div>
+                    <div class="card" style="padding:12px;background:var(--bg-dim);border-left:4px solid var(--success);">
+                        <div class="text-xs text-dim">Laba Bersih</div>
+                        <div class="text-lg font-bold" id="expenseKpiBersih" style="margin-top:4px;color:var(--success);">Rp 0</div>
+                    </div>
+                </div>
+
+                <!-- Expense Table -->
+                <div class="tbl-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width:36px;">No</th>
+                                <th>Tanggal</th>
+                                <th>Kategori</th>
+                                <th>Keterangan</th>
+                                <th style="text-align:right;">Nominal</th>
+                                <th style="text-align:center;width:48px;">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="expenseTableBody">
+                            <tr><td colspan="6" class="text-center text-dim" style="padding:24px;">Pilih bulan untuk melihat beban operasional.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+        </div><!-- /#admin-expenses -->
+
+        <!-- Panel: Reports History -->
+        <div id="admin-history" class="admin-panel">
+            <div class="flex-between mb-md">
+                <h3 style="font-size:15px;"><i class="ri-history-line" style="color:var(--primary-light);"></i> Riwayat Laporan</h3>
+                <div class="flex gap-sm">
+                    <button id="btnExportAllReportsPdf" class="btn btn-sm btn-primary" style="width:auto;"><i class="ri-file-pdf-2-line"></i> Ekspor PDF</button>
+                </div>
+            </div>
+            <div class="search-row"><input type="text" id="searchReportsLog" placeholder="Cari tanggal, nama..."></div>
+            <div class="tbl-wrap"><table><thead><tr><th>Tanggal</th><th>Shift</th><th>Detail</th><th>Total</th><th>Cash</th><th>TF</th><th>Kredit</th><th></th></tr></thead><tbody id="reportsLogTableBody"></tbody></table></div>
+        </div>
+
+        <!-- Panel: Reset Data -->
+        <div id="admin-reset" class="admin-panel">
+            <div class="flex-between mb-lg" style="border-bottom: 2px solid var(--border-color); padding-bottom: 12px; margin-bottom: 20px;">
+                <h3 style="font-size:16px; color: #ef4444; display: flex; align-items: center; gap: 8px;">
+                    <i class="ri-refresh-line"></i> Pembersihan & Reset Data (Danger Zone)
+                </h3>
+                <span class="text-xs text-dim" style="background: rgba(239, 68, 68, 0.1); color: #ef4444; padding: 4px 10px; border-radius: 20px; font-weight: 600;">Akses Terbatas: Super Admin Only</span>
+            </div>
+
+            <p class="text-sm text-dim mb-lg" style="margin-bottom: 20px; line-height: 1.5;">
+                Halaman ini berisi semua alat pembersih database lokal dan server Supabase. 
+                Tindakan di bawah ini bersifat merusak dan <strong>tidak dapat dibatalkan</strong>. Gunakan hanya saat migrasi sistem atau pembersihan data uji coba.
+            </p>
+
+            <div class="form-grid cols-2" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; margin-bottom: 30px;">
+                <!-- Card 1: Stok HP / iPad -->
+                <div class="card" style="padding: 16px; border: 1px solid var(--border-color); display: flex; flex-direction: column; justify-content: space-between;">
+                    <div>
+                        <h4 style="font-size: 14px; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;"><i class="ri-smartphone-line" style="color: var(--primary);"></i> Reset Stok HP / iPad</h4>
+                        <p style="font-size: 12px; color: var(--text-dim); margin-bottom: 12px; line-height: 1.4;">
+                            Menghapus seluruh daftar inventaris unit HP/iPad baik di perangkat lokal ini maupun di server.
+                        </p>
+                        <p style="font-size: 11px; color: #f43f5e; font-weight: 600; margin-bottom: 16px;">
+                            ⚠️ Konsekuensi: Semua data stok HP/iPad terhapus permanen.
+                        </p>
+                    </div>
+                    <button type="button" id="btnResetAllDevices" class="btn btn-sm btn-danger-outline" style="width: 100%;"><i class="ri-delete-bin-line"></i> Reset Stok HP</button>
+                </div>
+
+                <!-- Card 2: Stok Aksesoris -->
+                <div class="card" style="padding: 16px; border: 1px solid var(--border-color); display: flex; flex-direction: column; justify-content: space-between;">
+                    <div>
+                        <h4 style="font-size: 14px; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;"><i class="ri-plug-line" style="color: var(--primary);"></i> Reset Stok Aksesoris</h4>
+                        <p style="font-size: 12px; color: var(--text-dim); margin-bottom: 12px; line-height: 1.4;">
+                            Menghapus seluruh daftar inventaris aksesoris baik di perangkat lokal ini maupun di server.
+                        </p>
+                        <p style="font-size: 11px; color: #f43f5e; font-weight: 600; margin-bottom: 16px;">
+                            ⚠️ Konsekuensi: Semua data stok aksesoris terhapus permanen.
+                        </p>
+                    </div>
+                    <button type="button" id="btnResetAllAccs" class="btn btn-sm btn-danger-outline" style="width: 100%;"><i class="ri-delete-bin-line"></i> Reset Stok Aksesoris</button>
+                </div>
+
+                <!-- Card 3: Katalog Jasa Service -->
+                <div class="card" style="padding: 16px; border: 1px solid var(--border-color); display: flex; flex-direction: column; justify-content: space-between;">
+                    <div>
+                        <h4 style="font-size: 14px; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;"><i class="ri-tools-line" style="color: var(--primary);"></i> Reset Katalog Jasa Service</h4>
+                        <p style="font-size: 12px; color: var(--text-dim); margin-bottom: 12px; line-height: 1.4;">
+                            Menghapus seluruh daftar katalog jasa service (jenis layanan dan tarif) di perangkat lokal dan server.
+                        </p>
+                        <p style="font-size: 11px; color: #f43f5e; font-weight: 600; margin-bottom: 16px;">
+                            ⚠️ Konsekuensi: Kasir tidak dapat memilih layanan cepat, katalog harus diinput ulang.
+                        </p>
+                    </div>
+                    <button type="button" id="btnResetAllServices" class="btn btn-sm btn-danger-outline" style="width: 100%;"><i class="ri-delete-bin-line"></i> Reset Katalog Jasa</button>
+                </div>
+
+                <!-- Card 4: Katalog Lain-lain -->
+                <div class="card" style="padding: 16px; border: 1px solid var(--border-color); display: flex; flex-direction: column; justify-content: space-between;">
+                    <div>
+                        <h4 style="font-size: 14px; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;"><i class="ri-price-tag-3-line" style="color: var(--primary);"></i> Reset Katalog Lain-lain</h4>
+                        <p style="font-size: 12px; color: var(--text-dim); margin-bottom: 12px; line-height: 1.4;">
+                            Menghapus seluruh daftar katalog barang lain-lain di perangkat lokal dan server.
+                        </p>
+                        <p style="font-size: 11px; color: #f43f5e; font-weight: 600; margin-bottom: 16px;">
+                            ⚠️ Konsekuensi: Daftar item bebas/lain-lain terhapus permanen.
+                        </p>
+                    </div>
+                    <button type="button" id="btnResetAllOthers" class="btn btn-sm btn-danger-outline" style="width: 100%;"><i class="ri-delete-bin-line"></i> Reset Katalog Lain-lain</button>
+                </div>
+
+                <!-- Card 5: Nota Service (Transaksi Jasa) -->
+                <div class="card" style="padding: 16px; border: 1px solid var(--border-color); display: flex; flex-direction: column; justify-content: space-between;">
+                    <div>
+                        <h4 style="font-size: 14px; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;"><i class="ri-file-list-3-line" style="color: var(--primary);"></i> Reset Antrean Nota Service</h4>
+                        <p style="font-size: 12px; color: var(--text-dim); margin-bottom: 12px; line-height: 1.4;">
+                            Menghapus semua antrean nota service masuk/keluar/cancel baik secara lokal maupun di server database.
+                        </p>
+                        <p style="font-size: 11px; color: #f43f5e; font-weight: 600; margin-bottom: 16px;">
+                            ⚠️ Konsekuensi: Semua riwayat servisan pelanggan hilang permanen.
+                        </p>
+                    </div>
+                    <button type="button" id="btnResetAllServiceOrders" class="btn btn-sm btn-danger-outline" style="width: 100%;"><i class="ri-delete-bin-line"></i> Reset Semua Nota Service</button>
+                </div>
+
+                <!-- Card 6: Request Preorder -->
+                <div class="card" style="padding: 16px; border: 1px solid var(--border-color); display: flex; flex-direction: column; justify-content: space-between;">
+                    <div>
+                        <h4 style="font-size: 14px; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;"><i class="ri-reserved-line" style="color: var(--primary);"></i> Reset Request Preorder</h4>
+                        <p style="font-size: 12px; color: var(--text-dim); margin-bottom: 12px; line-height: 1.4;">
+                            Menghapus seluruh antrean pesanan preorder beserta catatan DP/uang muka lokal dan server.
+                        </p>
+                        <p style="font-size: 11px; color: #f43f5e; font-weight: 600; margin-bottom: 16px;">
+                            ⚠️ Konsekuensi: Kehilangan data antrean preorder konsumen secara permanen.
+                        </p>
+                    </div>
+                    <button type="button" id="btnResetAllPreorders" class="btn btn-sm btn-danger-outline" style="width: 100%;"><i class="ri-delete-bin-line"></i> Reset Semua Preorder</button>
+                </div>
+
+                <!-- Card 7: Beban Operasional -->
+                <div class="card" style="padding: 16px; border: 1px solid var(--border-color); display: flex; flex-direction: column; justify-content: space-between;">
+                    <div>
+                        <h4 style="font-size: 14px; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;"><i class="ri-money-dollar-circle-line" style="color: var(--primary);"></i> Reset Beban Operasional</h4>
+                        <p style="font-size: 12px; color: var(--text-dim); margin-bottom: 12px; line-height: 1.4;">
+                            Menghapus seluruh pengeluaran/beban operasional bulanan toko baik secara lokal maupun di server.
+                        </p>
+                        <p style="font-size: 11px; color: #f43f5e; font-weight: 600; margin-bottom: 16px;">
+                            ⚠️ Konsekuensi: Seluruh data beban/biaya bulanan terhapus. Laba bersih akan dikalkulasi ulang.
+                        </p>
+                    </div>
+                    <button type="button" id="btnResetAllExpenses" class="btn btn-sm btn-danger-outline" style="width: 100%;"><i class="ri-delete-bin-line"></i> Reset Beban Operasional</button>
+                </div>
+
+                <!-- Card 8: Riwayat Laporan Transaksi -->
+                <div class="card" style="padding: 16px; border: 1px solid var(--border-color); display: flex; flex-direction: column; justify-content: space-between;">
+                    <div>
+                        <h4 style="font-size: 14px; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;"><i class="ri-history-line" style="color: var(--primary);"></i> Reset Riwayat Laporan Transaksi</h4>
+                        <p style="font-size: 12px; color: var(--text-dim); margin-bottom: 12px; line-height: 1.4;">
+                            Menghapus riwayat transaksi penjualan kasir lokal secara total.
+                        </p>
+                        <p style="font-size: 11px; color: #f43f5e; font-weight: 600; margin-bottom: 16px;">
+                            ⚠️ Konsekuensi: Riwayat transaksi terhapus. Stok unit HP/iPad & kuantitas aksesoris yang pernah terjual otomatis dikembalikan ke inventaris.
+                        </p>
+                    </div>
+                    <button type="button" id="btnClearAllReports" class="btn btn-sm btn-danger-outline" style="width: 100%;"><i class="ri-delete-bin-line"></i> Reset Riwayat Laporan</button>
+                </div>
+            </div>
+
+            <!-- Master Resets Section -->
+            <div style="border-top: 2px solid #ef4444; padding-top: 20px; margin-top: 30px;">
+                <h4 style="color: #ef4444; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;"><i class="ri-error-warning-fill" style="font-size: 18px;"></i> Master System Reset (Tindakan Kritis)</h4>
+                
+                <div class="form-grid cols-2" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px;">
+                    <!-- Master Reset Server -->
+                    <div class="card" style="padding: 16px; border: 1.5px solid #ef4444; background: rgba(239, 68, 68, 0.02);">
+                        <h4 style="font-size: 14px; color: #ef4444; margin-bottom: 8px;"><i class="ri-cloud-off-line"></i> Hapus Seluruh Data Server</h4>
+                        <p style="font-size: 12px; color: var(--text-dim); margin-bottom: 12px; line-height: 1.4;">
+                            Menghapus seluruh tabel data pada server database Supabase secara permanen (Stok HP, Aksesoris, Jasa, Transaksi, Preorder, Service, dll).
+                        </p>
+                        <p style="font-size: 11px; color: #f43f5e; font-weight: 600; margin-bottom: 16px;">
+                            ⚠️ Konsekuensi: Server database Supabase akan kosong bersih. Data lokal perangkat ini tetap ada.
+                        </p>
+                        <button type="button" id="btnDeleteAllServerData" class="btn btn-sm btn-danger" style="width: 100%; background: #ef4444; border: none; color: white;"><i class="ri-delete-bin-line"></i> Hapus Seluruh Data Server</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+    <!-- ========== RECEIPT MODAL ========== -->
+    <div id="salesItemModal" class="modal-bg">
+        <div class="modal-box sales-item-modal-box">
+            <div class="flex-between mb-sm">
+                <h3 id="salesItemModalTitle"><i class="ri-shopping-bag-3-line"></i> Tambah Item</h3>
+                <button id="btnCloseSalesItemModal" type="button" class="btn-icon" title="Tutup"><i class="ri-close-line"></i></button>
+            </div>
+            <div id="salesItemModalMount"></div>
+        </div>
+    </div>
+
+    <!-- ========== SALES CART MODAL (TOKOPEDIA-STYLE DRAWER) ========== -->
+    <div id="salesCartModal" class="modal-bg">
+        <div class="modal-box cart-drawer-box">
+            <div class="flex-between mb-sm" style="border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 15px;">
+                <h3 style="font-size: 16px; margin: 0; display: flex; align-items: center; gap: 8px;"><i class="ri-shopping-cart-2-line"></i> Keranjang Belanja</h3>
+                <button id="btnCloseSalesCartModal" type="button" class="btn-icon" title="Tutup" style="border: 1px solid var(--border); background: #ffffff; font-size: 22px; cursor: pointer; color: var(--text-dim);"><i class="ri-close-line"></i></button>
+            </div>
+            <div id="salesCartModalMount"></div>
+        </div>
+    </div>
+
+    <div id="receiptModal" class="modal-bg">
+        <div class="modal-box receipt-box">
+            <h3><i class="ri-printer-line"></i> Cetak Struk</h3>
+            <pre id="receiptPreview" class="receipt-preview"></pre>
+            <div class="btn-row">
+                <button id="btnCloseReceipt" type="button" class="btn btn-ghost">Tutup</button>
+                <button id="btnShareReceipt" type="button" class="btn btn-secondary"><i class="ri-file-pdf-line"></i> Bagikan PDF</button>
+                <button id="btnShareReceiptImage" type="button" class="btn btn-secondary"><i class="ri-image-line"></i> Bagikan Gambar</button>
+                <button id="btnPrintReceipt" type="button" class="btn btn-primary"><i class="ri-printer-line"></i> Cetak</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== ADMIN LOGIN MODAL ========== -->
+    <div id="adminPinModal" class="modal-bg">
+        <div class="modal-box" style="max-width: 380px; width: 100%;">
+            <div style="text-align: center; margin-bottom: 18px;">
+                <div style="width: 52px; height: 52px; border-radius: 50%; background: var(--primary-soft); display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; color: var(--primary); font-size: 26px;">
+                    <i class="ri-shield-keyhole-line"></i>
+                </div>
+                <h3 style="font-size: 17px; font-weight: 800; color: var(--text); margin-bottom: 4px;">Masuk Admin Center</h3>
+                <p style="font-size: 12px; color: var(--text-dim); line-height: 1.4;">Pilih akun dan masukkan kata sandi admin untuk mengakses menu Admin Center</p>
+            </div>
+            <form id="adminAuthForm" onsubmit="event.preventDefault();">
+                <div class="field" style="text-align: left; margin-bottom: 14px;">
+                    <label style="font-weight: 700; font-size: 11px; margin-bottom: 4px; display: block; color: var(--text-2);">AKUN / USERNAME ADMIN</label>
+                    <select id="adminLoginUsername" style="width: 100%; padding: 10px 12px; font-size: 14px; border-radius: 8px; min-height: 42px;">
+                    </select>
+                </div>
+                <div class="field" style="text-align: left; margin-bottom: 16px;">
+                    <label style="font-weight: 700; font-size: 11px; margin-bottom: 4px; display: block; color: var(--text-2);">KATA SANDI <span class="required" style="color: var(--danger);">*</span></label>
+                    <input type="password" id="adminPinInput" placeholder="Masukkan kata sandi..." autocomplete="current-password" style="width: 100%; padding: 10px 12px; font-size: 14px; border-radius: 8px; min-height: 42px;">
+                    <div id="adminPinError" class="pin-error" style="display: none; color: #ef4444; font-size: 12px; margin-top: 6px; font-weight: 600;">Kata sandi admin salah!</div>
+                </div>
+                <div class="btn-row" style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+                    <button id="btnCancelAdminAuth" type="button" class="btn btn-ghost" style="padding: 10px 16px;">Batal</button>
+                    <button id="btnVerifyAdminAuth" type="submit" class="btn btn-primary" style="padding: 10px 18px; font-weight: 700;">Masuk Admin</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ========== UNIFIED EDIT MODAL ========== -->
+    <div id="editModal" class="modal-bg">
+        <div class="modal-box" style="max-width: 440px;">
+            <div class="flex-between mb-sm" style="border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between;">
+                <h3 id="editModalTitle" style="font-size: 15px; margin: 0; display: flex; align-items: center; gap: 6px;"><i class="ri-edit-2-line"></i> Edit Data</h3>
+                <button id="btnCancelEditCross" type="button" class="btn-icon" title="Tutup" style="border: none; background: transparent; font-size: 20px; cursor: pointer; color: var(--text-dim);"><i class="ri-close-line"></i></button>
+            </div>
+            <form id="editForm" autocomplete="off" onsubmit="event.preventDefault();">
+                <div id="editFormFields" style="display: flex; flex-direction: column; gap: 14px;">
+                    <!-- Form fields populated dynamically by JavaScript -->
+                </div>
+                <div class="btn-row" style="margin-top: 20px; display: flex; justify-content: flex-end; gap: 10px;">
+                    <button type="button" id="btnCancelEdit" class="btn btn-ghost">Batal</button>
+                    <button type="submit" id="btnSaveEdit" class="btn btn-primary">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ========== SUPER ADMIN AUTH MODAL ========== -->
+    <div id="superAdminAuthModal" class="modal-bg">
+        <div class="modal-box" style="max-width: 340px;">
+            <div style="text-align: center; margin-bottom: 15px;">
+                <i class="ri-shield-user-line" style="font-size: 40px; color: #ef4444;"></i>
+                <h3 style="margin-top: 10px; font-size: 15px; color: var(--text);">Otorisasi Super Admin</h3>
+                <p style="font-size: 11px; color: var(--text-dim); margin-top: 4px;">Tindakan berbahaya membutuhkan kata sandi Super Admin</p>
+            </div>
+            <div class="field" style="margin-bottom: 15px;">
+                <input type="password" id="superAdminPasswordInput" placeholder="Kata sandi Super Admin" style="text-align: center; font-size: 15px; padding: 8px; width: 100%; border: 1px solid var(--border); border-radius: var(--r);">
+                <div id="superAdminAuthError" class="text-danger text-xs" style="display: none; text-align: center; margin-top: 5px;">Kata sandi salah!</div>
+            </div>
+            <div class="btn-row" style="display: flex; gap: 10px; justify-content: flex-end;">
+                <button id="btnCancelSuperAdminAuth" class="btn btn-ghost">Batal</button>
+                <button id="btnVerifySuperAdminAuth" class="btn btn-danger" style="background: #ef4444; border: none; color: white;">Konfirmasi</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== PREORDER EDIT MODAL ========== -->
+    <div id="preorderEditModal" class="modal-bg">
+        <div class="modal-box preorder-edit-box">
+            <div class="flex-between mb-sm" style="border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 15px;">
+                <h3 style="font-size: 15px; margin: 0; display: flex; align-items: center; gap: 6px;"><i class="ri-edit-2-line"></i> Edit Pre-order</h3>
+                <button id="btnClosePreorderEdit" type="button" class="btn-icon" title="Tutup" style="border: none; background: transparent; font-size: 20px; cursor: pointer; color: var(--text-dim);"><i class="ri-close-line"></i></button>
+            </div>
+            <div id="preorderEditFormMount"></div>
+        </div>
+    </div>
+
+    <!-- ========== PDF REPORT EXPORT MODAL ========== -->
+    <div id="pdfExportModal" class="modal-bg">
+        <div class="modal-box" style="max-width: 800px; width: 95%; height: 85vh; display: flex; flex-direction: column;">
+            <div class="flex-between mb-sm" style="border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 10px; flex-shrink: 0;">
+                <h3 style="font-size: 16px; margin: 0; display: flex; align-items: center; gap: 8px;">
+                    <i class="ri-file-pdf-2-line" style="color:var(--primary);"></i> Laporan Keuangan & Untung Rugi
+                </h3>
+                <button id="btnClosePdfExportModal" type="button" class="btn-icon" title="Tutup" style="border: none; background: transparent; font-size: 20px; cursor: pointer; color: var(--text-dim);"><i class="ri-close-line"></i></button>
+            </div>
+            
+            <div class="form-grid cols-2 mb-sm" style="flex-shrink: 0; gap: 8px;">
+                <div class="field" style="margin-bottom: 0;">
+                    <label style="font-size: 10px;">Tanggal Laporan Harian</label>
+                    <input type="date" id="pdfReportDate" style="padding: 6px 10px; font-size: 13px;">
+                </div>
+                <div class="field" style="margin-bottom: 0;">
+                    <label style="font-size: 10px;">Bulan Laporan Bulanan</label>
+                    <input type="month" id="pdfReportMonth" style="padding: 6px 10px; font-size: 13px;">
+                </div>
+            </div>
+
+            <!-- Tabs Navigation -->
+            <div class="flex gap-sm mb-sm" style="border-bottom: 1px solid var(--border); padding-bottom: 6px; flex-shrink: 0; overflow-x: auto; white-space: nowrap;">
+                <button type="button" class="btn btn-sm btn-primary pdf-tab" data-tab="harian" style="padding: 6px 12px; font-size: 12px; width: auto; display: inline-block;">Harian (Semua)</button>
+                <button type="button" class="btn btn-sm btn-ghost pdf-tab" data-tab="bulanan-unit" style="padding: 6px 12px; font-size: 12px; width: auto; display: inline-block;">Bulanan Unit HP</button>
+                <button type="button" class="btn btn-sm btn-ghost pdf-tab" data-tab="bulanan-acc" style="padding: 6px 12px; font-size: 12px; width: auto; display: inline-block;">Bulanan Aksesoris</button>
+                <button type="button" class="btn btn-sm btn-ghost pdf-tab" data-tab="bulanan-service" style="padding: 6px 12px; font-size: 12px; width: auto; display: inline-block;">Bulanan Service</button>
+            </div>
+
+            <!-- Tab Contents Preview -->
+            <div id="pdfExportPreviewContainer" style="flex: 1; overflow-y: auto; background: #fafbfc; border: 1px solid var(--border); border-radius: 8px; padding: 12px;">
+                <!-- Tables populated dynamically by JS -->
+            </div>
+
+            <div class="btn-row" style="margin-top: 12px; display: flex; justify-content: flex-end; gap: 10px; flex-shrink: 0; border-top: 1px solid var(--border); padding-top: 10px;">
+                <button type="button" id="btnCancelPdfExport" class="btn btn-ghost" style="padding: 8px 16px; font-size: 13px; width: auto;">Tutup</button>
+                <button type="button" id="btnDownloadReportPdf" class="btn btn-primary" style="padding: 8px 16px; font-size: 13px; width: auto; display: flex; align-items: center; gap: 6px;">
+                    <i class="ri-file-download-line"></i> Download PDF
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== NATIVE PDF ACTIONS MODAL ========== -->
+    <div id="nativePdfModal" class="modal-bg">
+        <div class="modal-box" style="max-width: 400px; width: 92%; border: 1.5px solid var(--primary);">
+            <div class="flex-between mb-sm" style="border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 15px;">
+                <h3 style="font-size: 15px; margin: 0; display: flex; align-items: center; gap: 8px; color: var(--primary);">
+                    <i class="ri-file-pdf-fill" style="font-size: 20px;"></i> Pilihan Ekspor PDF
+                </h3>
+                <button id="btnCloseNativePdfModal" type="button" class="btn-icon" style="border: none; background: transparent; font-size: 20px; cursor: pointer; color: var(--text-dim);"><i class="ri-close-line"></i></button>
+            </div>
+            <p style="font-size: 12px; color: var(--text-dim); margin-bottom: 20px; line-height: 1.4;">
+                Pilih metode ekspor untuk file <strong id="nativePdfFilename" style="color: var(--text);">laporan.pdf</strong>:
+            </p>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <button id="btnNativeSharePdf" class="btn btn-primary" style="justify-content: center; gap: 8px; padding: 12px; font-size: 13px; width: 100%; display: flex; align-items: center;">
+                    <i class="ri-share-forward-line" style="font-size: 16px;"></i> Bagikan ke Aplikasi Lain (WhatsApp, dll.)
+                </button>
+                <button id="btnNativeSavePdf" class="btn btn-secondary" style="justify-content: center; gap: 8px; padding: 12px; font-size: 13px; width: 100%; border: 1px solid var(--border); display: flex; align-items: center;">
+                    <i class="ri-download-2-line" style="font-size: 16px;"></i> Simpan ke Folder Download & Buka
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== EMPLOYEE LOGIN OVERLAY (HIDDEN BY DEFAULT) ========== -->
+    <div id="loginOverlay" class="modal-bg" style="z-index: 9999; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; padding: 16px;">
+        <div class="modal-box" style="max-width: 380px; width: 100%; padding: 28px 24px; text-align: center; border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);">
+            <form id="employeeLoginForm" onsubmit="return false;">
+                <img src="logo.png" alt="Logo" style="width: 72px; height: auto; margin: 0 auto 12px; display: block;">
+                <h3 style="font-size: 18px; font-weight: 800; margin-bottom: 4px; color: var(--text);">Selamat Datang</h3>
+                <p style="color: var(--text-dim); font-size: 12px; margin-bottom: 20px;">Silakan pilih akun pegawai Anda untuk masuk ke aplikasi</p>
+                
+                <div class="field" style="text-align: left; margin-bottom: 14px;">
+                    <label style="font-weight: 700; font-size: 11px; margin-bottom: 4px; display: block; color: var(--text-2);">PILIH PEGAWAI</label>
+                    <select id="loginUserSelect" style="width: 100%; padding: 10px 12px; font-size: 15px; border-radius: 8px; min-height: 42px;">
+                    </select>
+                </div>
+                
+                <div class="field" id="loginUserPasswordContainer" style="text-align: left; margin-bottom: 16px; display: none;">
+                    <label style="font-weight: 700; font-size: 11px; margin-bottom: 4px; display: block; color: var(--text-2);">KATA SANDI <span class="required" style="color: var(--danger);">*</span></label>
+                    <input type="password" id="loginUserPassword" placeholder="Ketik kata sandi..." autocomplete="current-password" style="width: 100%; padding: 10px 12px; font-size: 15px; border-radius: 8px; min-height: 42px;">
+                </div>
+                
+                <button id="btnLoginSubmit" type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; font-size: 14px; font-weight: 700; min-height: 44px; touch-action: manipulation; cursor: pointer; border-radius: 8px;">Masuk Aplikasi</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ========== POST-LOGIN SYNC ANIMATION OVERLAY ========== -->
+    <div id="postLoginSyncOverlay">
+        <div class="sync-anim-box">
+            <div class="sync-anim-icon-wrap">
+                <div id="syncSpinnerRing" class="sync-spinner-ring"></div>
+                <i id="syncAnimCenterIcon" class="ri-cloud-line" style="font-size: 32px; color: var(--primary); z-index: 2;"></i>
+                <i id="syncAnimSuccessIcon" class="ri-checkbox-circle-fill sync-anim-success-icon" style="z-index: 2;"></i>
+            </div>
+            
+            <h3 id="syncAnimTitle" style="font-size: 17px; font-weight: 800; margin-bottom: 6px; color: var(--text);">Menyelaraskan Data...</h3>
+            <p id="syncAnimDesc" style="color: var(--text-dim); font-size: 13px; margin-bottom: 20px; line-height: 1.4;">Mengunduh stok unit, transaksi & laporan terbaru dari cloud</p>
+            
+            <!-- Modern Shimmer Progress Bar -->
+            <div class="sync-progress-track">
+                <div id="syncProgressBar" class="sync-progress-fill"></div>
+            </div>
+            
+            <div id="syncAnimStep" style="font-size: 11px; font-weight: 700; color: var(--primary); margin-top: 12px; letter-spacing: 0.5px; text-transform: uppercase;">MENGHUBUNGKAN KE CLOUD...</div>
+        </div>
+    </div>
+
+    <!-- ========== PAYMENT CONFIRMATION POPUP ========== -->
+    <div id="paymentConfirmPopup" class="payment-confirm-overlay" style="display:none;"></div>
+
+    <!-- ========== MODAL: DELETE SERVER DATA ========== -->
+    <div id="modalDeleteServerData" class="modal-bg" style="display: none;">
+        <div class="modal-box" style="max-width: 440px; border: 2px solid #f43f5e;">
+            <h3 style="color: #f43f5e;"><i class="ri-error-warning-fill"></i> Konfirmasi Hapus Data Server</h3>
+            <p>Tindakan ini akan <strong>menghapus secara permanen semua data di server Supabase</strong> (Transaksi, Stok HP, Aksesoris, Teknisi, dll).</p>
+            <p style="font-size: 13px; color: var(--text-dim); margin-top: 10px;">Silakan ketik <strong>HAPUS SERVER</strong> untuk mengonfirmasi:</p>
+            <div class="field">
+                <input type="text" id="deleteServerConfirmInput" placeholder="Ketik HAPUS SERVER" style="text-align: center; font-weight: bold; border-color: #f43f5e;">
+            </div>
+            <div class="btn-row">
+                <button type="button" id="btnCancelDeleteServer" class="btn btn-ghost">Batal</button>
+                <button type="button" id="btnConfirmDeleteServer" class="btn btn-danger" style="background: #f43f5e; border-color: #f43f5e; color: white; pointer-events: none; opacity: 0.4;">Ya, Hapus Semua Data</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== TOAST AREA ========== -->
+    <div id="toastContainer" class="toast-area"></div>
+
+    <script src="jspdf.umd.min.js"></script>
+    <script src="jspdf.plugin.autotable.min.js"></script>
+    <script>
+        // Konfigurasi Supabase — embed langsung agar andal di Android WebView
+        // Update nilai ini jika URL atau key Supabase berubah
+        window.IGOOD_SUPABASE = {
+            url: 'https://jnwdoucyjwhkqxrztubm.supabase.co',
+            key: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impud2RvdWN5andoa3F4cnp0dWJtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA4NzU0NzIsImV4cCI6MjA5NjQ1MTQ3Mn0.mQ5-WX_IFGhi4c_C0cEXFEZnjDO1yDAqvHZOaqGAJ4c'
+        };
+    </script>
+    <script src="js/utils.js?v=3.5"></script>
+    <script src="js/storage.js?v=3.5"></script>
+    <script src="js/supabase.js?v=3.5"></script>
+    <script src="js/receipt.js?v=3.5"></script>
+    <script src="js/service.js?v=3.5"></script>
+    <script src="js/sales.js?v=3.5"></script>
+    <script src="js/daily-report.js?v=3.5"></script>
+    <script src="js/admin.js?v=3.5"></script>
+    <script src="app.js?v=3.5"></script>
+</body>
+</html>

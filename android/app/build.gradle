@@ -1,0 +1,74 @@
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android' version '2.1.0'
+}
+
+android {
+    namespace = "com.igood.report"
+    compileSdk = rootProject.ext.compileSdkVersion
+    defaultConfig {
+        applicationId "com.igood.report"
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+    signingConfigs {
+        release {
+            storeFile     file("../../android/igood-release.jks")
+            storePassword "igood2024"
+            keyAlias      "igood"
+            keyPassword   "igood2024"
+        }
+    }
+    buildTypes {
+        release {
+            signingConfig   signingConfigs.release
+            minifyEnabled   false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_21
+        targetCompatibility JavaVersion.VERSION_21
+    }
+    kotlinOptions {
+        jvmTarget = '21'
+    }
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:2.1.0"
+    implementation "androidx.appcompat:appcompat:$androidxAppCompatVersion"
+    implementation "androidx.coordinatorlayout:coordinatorlayout:$androidxCoordinatorLayoutVersion"
+    implementation "androidx.core:core-splashscreen:$coreSplashScreenVersion"
+    implementation "androidx.webkit:webkit:$androidxWebkitVersion"
+    implementation "androidx.activity:activity-ktx:$androidxActivityVersion"
+    testImplementation "junit:junit:$junitVersion"
+    androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
+}
+
+// ─── Auto-copy web assets from project root to assets/public/ on every build ───
+// This ensures that when you press Run or Build APK in Android Studio,
+// the latest web files (index.html, app.js, style.css, etc.) are always included.
+task copyWebAssets(type: Copy) {
+    description = 'Copies web assets from project root to android assets/public/ folder'
+    def projectRoot = rootProject.projectDir.parentFile  // go up from android/ to project root
+    def webFiles = ['index.html', 'app.js', 'style.css', 'logo.png', 'jspdf.umd.min.js', 'jspdf.plugin.autotable.min.js', 'url supabase.txt']
+
+    from(projectRoot) {
+        include webFiles
+    }
+    into "${projectDir}/src/main/assets/public"
+}
+
+// Make sure copyWebAssets runs before the assets are merged into the APK
+tasks.configureEach { task ->
+    if (task.name.startsWith('merge') && task.name.contains('Assets')) {
+        task.dependsOn copyWebAssets
+    }
+}
+// Also run before preBuild for good measure
+preBuild.dependsOn copyWebAssets
